@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type"><title>QML Excercise: LifeGame</title></head><body>
+<h1>Qt 5.2 のQMLで「ライフ ゲーム」のアプリを作ってみた</h1>
+<div style="margin-left: 40px;">2014年1月3日 小林修<br>
+</div>
+<h2>はじめに</h2>
+
+昨年(2013年)の末にリリースされたQt5.2で、iOS対応が入ったので、年末・年始の休み中に少し遊んでみました。<br>
+題材は「ライフ ゲーム」。前の年末にObjective-Cでやってみたのと同じ題材ですが、今年はQt5の "Qt Quick" アプリケーションとして作ってみました。<br>
+GUIはC++ではなく、Qt独自のマークアップ言語のQMLを使っています。<br>
+<br>
+<div style="margin-left: 40px;"><img style="width: 640px; height: 748px;" alt="Developing LifeGame app on iOS." title="Developing LifeGame app on iOS." src="sample_image_00.jpg"><br>
+</div>
+<br>
+こんなの...<br>
+<br>
+<div style="margin-left: 40px;"><img src="sample_image_01.png" style="width: 417px; height: 456px;" alt="A sample snapshot image of Life Game." title="A sample snapshot image of Life Game."><br>
+</div>
+<br>
+<h2>「ライフ ゲーム」とは？</h2>
+例えば、ここを見てください。<br>
+<div style="margin-left: 40px;"><a href="http://ja.wikipedia.org/wiki/%E3%83%A9%E3%82%A4%E3%83%95%E3%82%B2%E3%83%BC%E3%83%A0">http://ja.wikipedia.org/wiki/ライフゲーム</a><br>
+</div>
+<br>
+<h2>アプリの使い方（Mac上で動かす場合）</h2>
+アプリを起動すると、赤地に黒のグリッド線が入った画面が開きます。<br>
+<div style="margin-left: 40px;"><img style="width: 162px; height: 182px;" alt="A sample snapshot of Life Game just after launch." title="A sample snapshot of Life Game just after launch." src="sample_image_02.png"><br>
+</div>
+&nbsp;どうも、Mac版のQMLにバグがあるみたいで、画面の中に PinchArea や MultiPointTouchArea が組み込まれると、画面サイズの調整がうまく行かずに縮んでしまうようです。以下のバグレポートがありました。<br>
+<div style="margin-left: 40px;"><a href="https://bugreports.qt-project.org/browse/QTBUG-35159">https://bugreports.qt-project.org/browse/QTBUG-35159</a><br>
+</div>
+なので、適当に画面をリサイズします。<br>
+<br>
+グリッドの上をクリックすると、セルの色が緑色に変わります。（緑色は「生命」を表します。）<br>
+生命を、適当にうまく増えそうなパターンに並べます。<br>
+このページ最初のスナップショットは、以下のパターンから増殖させたものです。<br>
+<div style="margin-left: 40px;"><img style="width: 289px; height: 298px;" alt="A sample snapshot of initial pattern." title="A sample snapshot of initial pattern." src="sample_image_03.png"><br>
+</div>
+<br>
+セルの表示は、2本指でのピンチ操作やドラッグ操作で、拡大・縮小・スクロールができるようになっています。<br>
+（マウス操作での拡大・縮小・スクロールは今のところ未対応。）<br>
+<br>
+あと、ボタン操作で；<br>
+<div style="margin-left: 40px;">startボタンでセルが動き始める。（1秒間隔）<br>
+stopボタンでセルの動きが止まる。（startボタンで止まったところから再開できる。）<br>
+clearボタンで生命が全部消されて、最初からやり直し。<br>
+quitボタンでアプリ終了。<br>
+</div>
+<br>
+<h2>
+アプリのビルド</h2>
+
+iPhone上で動かしたいので、Qtの<a href="http://qt-project.org/downloads">ダウンロードページ</a>から "Qt 5.2.0 for iOS (Mac, 950 MB) " をダウンロードして使いました。<br>
+以下は、Mac上でのXcodeのインストールや、アプリをiPhone上で実行するのに必要なProvisioning Profileの取得など、通常の方法でのiPhoneアプリの作成・テストができる環境は整っているものとして説明します。<br>
+<h3>GitHub にアップしたプロジェクトからiOS用にビルドする手順</h3>
+付属の QtCreatir 3.0 で、プロジェクトファイル LifeGameQML01.pro を開くと、以下のような "Configure
+Project" 画面が開くので、"iphone-clang Qt 5.2.0 for iOS" と
+"iphonesimulator-clang Qt 5.2.0 for iOS" をチェックし、画面右下の "Configure
+Project" ボタンをクリックします。<br>
+（画面内の "Desktop Qt 5.2.0 clang 64bit lldb" については、後述の「QtCreatorでgdbが使えなくなったこと」の項を参照のこと。）<br>
+<br>
+<div style="margin-left: 40px;"><img style="width: 978px; height: 779px;" alt="A snapshot of QtCreator's &quot;Configure Project&quot; screen." title="A snapshot of QtCreator's &quot;Configure Project&quot; screen." src="sample_image_04.png"><br>
+</div>
+
+<br>
+ビルドのターゲットを "iphone-clang Qt 5.2.0 for iOS" または "iphonesimulator-clang
+Qt 5.2.0 for iOS" に切り替えるには、CtCreator
+の画面左下の「ビルド／実行キットセレクタ」ボタン（画面左端のアイコン列の下から4番目）をクリックして「ビルド／実行キットセレクタ」画面を開き、そ
+こで "iphone-clang Qt 5.2.0 for iOS" または "iphonesimulator-clang Qt 5.2.0
+for iOS" を選択します。<br>
+<br>
+<div style="margin-left: 40px;"><img style="width: 611px; height: 356px;" alt="A sample snapshot of kit selection menu." title="A sample snapshot of kit selection menu." src="sample_image_05.png"><br>
+</div>
+<br>
+"iphonesimulator-clang Qt 5.2.0 for iOS" を選択した状態で、QtCreatorのメニュー「ビルド」-「実行」を選択すると、Xcode付属の「IOSシミュレータ」が起動され、その上でアプリケーションが実行されます。<br>
+"iphone-clang Qt 5.2.0 for iOS" を選択した状態で、Mac に iPhone を接続してQtCreatorのメニュー「ビルド」-「実行」を選択すると、アプリケーションがiPhoneにデプロイされて起動されて実行されます。<br>
+<h2>アプリケーションの構成</h2>
+このライフゲームアプリは、以下の２つのレイヤーから構成されています。<br>
+<div style="margin-left: 40px;">Model レイヤー<br>
+<div style="margin-left: 40px;">ライフゲームの「ルール」のロジックを実装し、ゲームの実行時の状態を保持する。<br>
+C++ により、QObjectの派生クラスとして実装。<br>
+</div>
+View + Controller レイヤー<br>
+<div style="margin-left: 40px;">ライフゲームのユーザーインターフェースをQMLにより実装。<br>
+</div>
+</div>
+
+<br>
+<div style="margin-left: 40px;"><img style="width: 1169px; height: 727px;" alt="Object diagram of the application." title="Object diagram of the application." src="object_diagram_01.png"><br>
+</div>
+<br>
+<h2>ソース</h2>
+<h3>QML</h3>
+<div style="margin-left: 40px;"><a href="../qml/LifeGameQML01/main.qml">main.qml</a><br>
+<a href="../qml/LifeGameQML01/Button.qml">Button.qml</a><br>
+<a href="../qml/LifeGameQML01/GameSpace.qml">GameSpace.qml</a><br>
+</div>
+<h3>C++</h3>
+<div style="margin-left: 40px;"><a href="../main.cpp">main.cpp</a><br>
+<a href="../gamemodel.h">gamemodel.h</a><br>
+<a href="../gamemodel.cpp">gamemodel.cpp</a><br>
+</div>
+<br>
+<h2>特記事項</h2>
+<h3>C++によるModel実装をQMLから利用する</h3>
+C++で実装したクラスをQMLから利用するには、以下が必要となります。<br>
+<ol>
+  <li>QObjectの派生クラスとして定義する。</li>
+  <li>QMLから呼び出したいメソッドには、キーワード Q_INVOKABLE を付けて宣言する。</li>
+  <li>C++クラスからQMLへ通知したいイベントをQtの「シグナル」として宣言する。</li>
+  <li>C++で定義したクラスをQtQMLモジュールの関数qmlRegisterTypeで登録する。</li>
+</ol>
+gamemodel.h<br>
+<table style="text-align: left; width: 579px; height: 447px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: monospace;">class GameModel : <span style="color: red;">public QObject</span></span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">{</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span style="color: red;">Q_OBJECT</span></span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">public:</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; explicit GameModel(QObject *parent = 0);</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; virtual ~GameModel();</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span style="color: red;">Q_INVOKABLE</span> void invertCellState( int row, int col );</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span style="color: red;">Q_INVOKABLE</span> bool isLifeInCell( int row, int col );</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span style="color: red;">Q_INVOKABLE</span> void next();</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span style="color: red;">Q_INVOKABLE</span> void clear();</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace; color: red;">signals:</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp; void cellChanged( int row, int col );</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp; void allChanged();</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">private:</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; bool isNextLife( int row, int col );</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; QSet&lt;CellPosition&gt; cellsWithLife;</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">};</span><br>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+main.cpp<br>
+<table style="text-align: left; width: 578px; height: 279px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: monospace;">int main(int argc, char *argv[])</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">{</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; QGuiApplication app(argc, argv);</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp; qmlRegisterType&lt;GameModel&gt;("LifeGame", 1, 0, "GameModel");</span><br style="font-family: monospace; color: red;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; QtQuick2ApplicationViewer viewer;</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; viewer.setMainQmlFile(QStringLiteral("qml/LifeGameQML01/main.qml"));</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; viewer.showExpanded();</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; return app.exec();</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">}</span><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+QMLからこのC++オブジェクトを利用するには、以下の手順を踏みます。<br>
+<ol>
+  <li>qmlRegisterType関数で指定したモジュール名とバージョンで、C++クラスをimportする。</li>
+  <li>qmlRegisterType関数で指定したコンポーネント名で、プロパティを宣言する。</li>
+  <li>C++で定義したシグナル名で、シグナル・ハンドラを定義する。</li>
+  <li>C++で定義したメソッド名で、メソッドを呼び出す。<br>
+  </li>
+</ol>
+GameSpace.qml<br>
+<table style="text-align: left; width: 853px; height: 798px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: monospace;">Canvas {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp; property GameModel model: GameModel{</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onCellChanged: {</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; canvas.requestPaint();</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onAllChanged: {</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; canvas.requestPaint();</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace; color: red;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; property Timer timer: Timer{</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id: timer</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interval: 1000</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; repeat: true</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onTriggered: {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: red;">canvas.model.next()</span></span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+
+      <span style="font-family: monospace; color: red;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; function clear(){</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; timer.stop()</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: red;">model.clear()</span></span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; onPaint: {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+
+
+      <span style="font-family: monospace; color: red;"></span><span style="font-family: monospace;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for( row = rowStart; row &lt;= rowEnd; row ++ ){</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for( col = columnStart; col &lt;= columnEnd; col ++ ){</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if( <span style="color: red;">model.isLifeInCell( row, col )</span> ){</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ctx.fillRect( col * canvas.cellSize, row * canvas.cellSize,
+canvas.cellSize, canvas.cellSize )</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+
+
+
+      <span style="font-family: monospace; color: red;"></span><span style="font-family: monospace;"></span><span style="font-family: monospace;"></span>}<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h3>MouseAreaとPinchAreaを同時に使う</h3>
+このアプリでは、個々のセルの状態を変更する操作として、マウスのクリック、または、指1本によるシングル・タッチを利用しています。そのため、QMLのマウス入力用コンポーネントMouseAreaでライフゲームの空間全体を覆います。<br>
+また、ゲームの空間の表示の拡大・縮小とスクロールを指2本によるピンチとドラッグ操作を利用しています。そのため、QMLのピンチ操作入力用コンポーネントPinchAreaでライフゲームの空間全体を覆います。<br>
+この2つを同じ領域に対して同時に利用する場合には、MouseAreaとPinchAreaとを同レベルに置くのではなく、PinchAreaの下位の要素としてMouseAreaを配置する必要があるようです。<br>
+以下にバグレポートがありました。<br>
+<div style="margin-left: 40px;"><a href="https://bugreports.qt-project.org/browse/QTBUG-33338">https://bugreports.qt-project.org/browse/QTBUG-33338</a><br>
+</div>
+<br>
+GameSpace.qml<br>
+<table style="text-align: left; width: 839px; height: 33px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: monospace;">Canvas {</span><br style="font-family: monospace;">
+
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; PinchArea{</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; anchors.fill: parent</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onPinchStarted: {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onPinchUpdated: {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+
+      <span style="font-family: monospace;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onPinchFinished: {</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace;">
+
+      <span style="font-family: monospace;"></span><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <br style="font-family: monospace;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MouseArea{</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; anchors.fill: parent</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onClicked: {</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><br style="font-family: monospace; color: red;">
+
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace; color: red;">
+      <span style="font-family: monospace; color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: monospace;">
+      <span style="font-family: monospace;">}</span><br style="font-family: monospace;">
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h3>CtCreateでgdbが使えなくなったこと</h3>
+このアプリを作成する直前に、Mac OS XとXcodeの最新版へのバージョンアップを行いました。<br>
+ところが、Xcodeのバージョンアップの影響で、CtCreatorでアプリをデバッグモードで実行しようとすると、以下のようなエラーが表示されます。<br>
+<br>
+<div style="margin-left: 40px;"><img style="width: 422px; height: 163px;" alt="A sample snapshot of error dialog." title="A sample snapshot of error dialog." src="sample_image_06.png"><br>
+</div>
+<br>
+Xcodeのバージョンアップに伴って、Xcode付属の「コマンドラインツール」からgdbが削除されてしまったようです。Xcodeとしてはデバッガ
+として/usr/bin/lldbを使用するようになっていますが、QtCreatorとしてはまだこの変更にうまく対応できていないようです。<br>
+これを回避するため、QtCreatorのメニュー「QtCreator」-「設定」で設定ダイアログを開き、「ビルドと実行」タブで「キット」を手動で
+追加します。こうするとデバッガとして/usr/bin/lldbが設定されます。（「名前」の "Desktop Qt 5.2.0 clang
+64but iOS" は自分で命名しました。）<br>
+<br>
+<div style="margin-left: 40px;"><img style="width: 1003px; height: 629px;" alt="A sample snapshot of preference window." title="A sample snapshot of preference window." src="sample_image_07.png"><br>
+</div>
+<br>
+こうして作成したキットを、Mac上での実行・デバッグ時のキットとして選択するようにします。<br>
+<br>
+以上。<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+</body></html>
