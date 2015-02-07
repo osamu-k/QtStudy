@@ -49,7 +49,11 @@ private slots:
     void disconnectedFromServer();
 
 private:
+    QLayout *setupColorSelector();
+    QLayout *setupWidthSelector();
     QLayout *setupFileButtons();
+    QLayout *setupListenButtons();
+    QLayout *setupConnectButtons();
 
     Canvas *m_canvas;
     QPushButton *m_listenButton;

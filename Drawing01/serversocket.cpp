@@ -23,6 +23,7 @@ ServerSocket::ServerSocket( QObject *parent )
     , m_blockSize( 0 )
 {
     connect( this, SIGNAL(readyRead()), this, SLOT(readReceivedData()) );
+    connect( this, SIGNAL(received(QByteArray)), SLOT(broadcastData(QByteArray)) );
     connect( this, SIGNAL(disconnected()), this, SLOT(finish()) );
 }
 
@@ -34,8 +35,11 @@ void ServerSocket::broadcastData( QByteArray data )
 {
     qDebug() << "Broadcasting data ...";
 
+    ServerSocket *receiver = qobject_cast<ServerSocket *>( sender() );
     foreach( ServerSocket *serverSocket, m_instanceList ){
-        serverSocket->send( data );
+        if( serverSocket != receiver ){
+            serverSocket->send( data );
+        }
     }
 }
 
