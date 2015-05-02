@@ -5,6 +5,7 @@
 #include "tokenizer.h"
 #include "parser.h"
 #include "evaluator.h"
+#include "treeviewer.h"
 
 class QLineEdit;
 class QTextEdit;
@@ -18,11 +19,14 @@ public:
     ~MainWidget();
 
 public slots:
+    void inputTextChanged();
     void returnPressed();
 
 private:
     QLineEdit *lineInput;
+    QLineEdit *lineError;
     QTextEdit *textDisplay;
+    TreeViewer *treeViewer;
 
     Tokenizer tokenizer;
     Parser parser;

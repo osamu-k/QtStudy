@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     interpreter/nodevisitor.cpp \
     interpreter/parser.cpp \
     interpreter/token.cpp \
-    interpreter/tokenizer.cpp
+    interpreter/tokenizer.cpp \
+    treeviewer.cpp \
+    tree.cpp
 
 HEADERS  += mainwidget.h \
     interpreter/evaluator.h \
@@ -27,6 +29,8 @@ HEADERS  += mainwidget.h \
     interpreter/nodevisitor.h \
     interpreter/parser.h \
     interpreter/token.h \
-    interpreter/tokenizer.h
+    interpreter/tokenizer.h \
+    treeviewer.h \
+    tree.h
 
 INCLUDEPATH += interpreter
