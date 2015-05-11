@@ -8,6 +8,9 @@
 #include <QDebug>
 #include <QRect>
 
+#include <algorithm>
+using namespace std;
+
 class TreeNode
 {
 public:
@@ -20,22 +23,31 @@ public:
 
     QRect layout( QFontMetrics &fm )
     {
-        m_rect = fm.boundingRect(m_string);
-        m_rect.adjust( 0, 0, fm.averageCharWidth(), fm.height() );
+        QRect brect = fm.boundingRect(m_string);
+        m_rect = QRect( 0, 0, brect.width() + fm.averageCharWidth(), brect.height() + fm.height() );
         if( m_rect.width() < m_rect.height() ){
             m_rect.setWidth( m_rect.height() );
         }
-        m_rect.moveTo( 0, 0 );
         return m_rect;
     }
 
-    QRect translate( QPoint offset ){
+    void translate( QPoint offset ){
         m_rect.translate( offset );
     }
 
     QRect rect()
     {
         return m_rect;
+    }
+
+    QPoint pointBranchIn()
+    {
+        return QPoint( m_rect.x() + m_rect.width(), m_rect.y() );
+    }
+
+    QPoint pointBranchOut()
+    {
+        return QPoint( m_rect.x() + m_rect.width(), m_rect.y() + m_rect.height() );
     }
 
     void draw( QPainter *painter )
@@ -54,11 +66,23 @@ private:
 class Tree
 {
 public:
-    Tree();
-    ~Tree();
+    Tree()
+    {}
+
+    ~Tree()
+    {
+        if( m_node )
+            delete m_node;
+        foreach( Tree *branch, m_branches ){
+            delete branch;
+        }
+        m_branches.clear();
+    }
 
     void setNode( TreeNode *node )
     {
+        if( m_node )
+            delete m_node;
         m_node = node;
     }
 
@@ -79,51 +103,55 @@ public:
 
     QRect layout( QFontMetrics &fm )
     {
-        qDebug() << "Layouting...";
-        int fontWidth = fm.averageCharWidth();
-        int fontHeight = fm.height();
-        int width = 0;
-        int height = 0;
+        int spacing = fm.height() * 2;
 
-        foreach( Tree *branch, m_branches ){
-            QRect brect = branch->layout( fm );
-            if( width > 0 ){
-                width += fontWidth * 2;
-            }
-            branch->translate( QPoint(width,0) );
-            width += brect.width();
-            if( height < brect.height() ){
-                height = brect.height();
-            }
-        }
+        m_rect = QRect(0,0,0,0);
+        QRect rectNode = m_node->layout( fm );
+        QRect rectBranches = layoutBranches( fm );
 
-        if( height > 0 ){
-            height += fontHeight * 2;
-        }
-        QRect nodeRect = m_node->layout( fm );
-        if( width < nodeRect.width() ){
-            width = nodeRect.width();
-            int dx = (nodeRect.width() - width) / 2;
-            foreach( Tree *branch, m_branches ){
-                branch->translate( QPoint(dx,0) );
+        m_rect.setWidth( max( rectNode.width(), rectBranches.width()) );
+        m_rect.setHeight( rectNode.height() + rectBranches.height() );
+
+        if( rectBranches.height() > 0 ){
+            m_rect.adjust( 0, 0, 0, spacing );
+            if( rectNode.width() <= rectBranches.width() ){
+                m_node->translate( QPoint((rectBranches.width() - rectNode.width())/2, 0) );
+            }
+            else{
+                adjustBranchs( (rectNode.width() - rectBranches.width()) / 2,
+                               rectNode.height() + spacing );
             }
         }
-        else{
-            int dx = (width - nodeRect.width()) / 2;
-            m_node->translate( QPoint(dx,0) );
-        }
-        height += nodeRect.height();
-
-        int dy = fontHeight * 2 + nodeRect.height();
-        foreach( Tree *branch, m_branches ){
-            branch->translate( QPoint(0,dy) );
-        }
-
-        m_rect = QRect( 0, 0, width, height );
         return m_rect;
     }
 
-    QRect translate( QPoint offset ){
+    QRect layoutBranches( QFontMetrics fm )
+    {
+        QRect rect(0,0,0,0);
+        int spacingH = fm.averageCharWidth() * 2;
+
+        foreach( Tree *branch, m_branches ){
+            QRect brect = branch->layout( fm );
+            if( rect.width() > 0 ){
+                rect.adjust(0,0,spacingH,0);
+            }
+            branch->translate( QPoint(rect.width(),0) );
+            rect.adjust(0,0,brect.width(),0);
+            if( rect.height() < brect.height() ){
+                rect.adjust(0,0,0,brect.height());
+            }
+        }
+        return rect;
+    }
+
+    void adjustBranchs( int dx, int dy )
+    {
+        foreach( Tree *branch, m_branches ){
+            branch->translate( QPoint(dx,dy) );
+        }
+    }
+
+    void translate( QPoint offset ){
         m_rect.translate( offset );
         m_node->translate( offset );
         foreach( Tree *branch, m_branches ){
@@ -136,17 +164,15 @@ public:
         return m_rect;
     }
 
-    QRect nodeRect()
+    QPoint pointBranchIn()
     {
-        return m_node->rect();
+        return m_node->pointBranchIn();
     }
 
     void draw( QPainter *painter ){
         foreach( Tree *branch, m_branches ){
+            painter->drawLine( m_node->pointBranchOut(), branch->pointBranchIn() );
             branch->draw( painter );
-            QPoint p1 = QPoint( m_node->rect().x() + m_node->rect().width() / 2, m_node->rect().y() + m_node->rect().height() );
-            QPoint p2 = QPoint( branch->rect().x() + branch->rect().width() / 2, branch->rect().y() );
-            painter->drawLine( p1, p2 );
         }
         m_node->draw( painter );
     }
