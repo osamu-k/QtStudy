@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     freehandpainter.cpp \
     rectanglepainter.cpp \
     shapewriter.cpp \
-    drawingserver.cpp
+    drawingserver.cpp \
+    image.cpp \
+    imagepainter.cpp
 
 HEADERS  += drawingpad.h \
     freehand.h \
@@ -45,7 +47,9 @@ HEADERS  += drawingpad.h \
     rectanglepainter.h \
     shapetypes.h \
     shapewriter.h \
-    drawingserver.h
+    drawingserver.h \
+    image.h \
+    imagepainter.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Broadcast001-Desktop_Qt_5_4_1_clang_64bit-Debug/BroadcastLib001/release/ -lBroadcastLib001
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Broadcast001-Desktop_Qt_5_4_1_clang_64bit-Debug/BroadcastLib001/debug/ -lBroadcastLib001

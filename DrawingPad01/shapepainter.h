@@ -11,6 +11,7 @@ public:
     ~ShapePainter();
     void handleShape( FreeHand * );
     void handleShape( Rectangle * );
+    void handleShape( Image * );
 
 private:
     QPainter &m_painter;

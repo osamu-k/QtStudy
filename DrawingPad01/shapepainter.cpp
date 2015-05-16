@@ -1,5 +1,7 @@
 #include "freehand.h"
 #include "freehandpainter.h"
+#include "image.h"
+#include "imagepainter.h"
 #include "rectangle.h"
 #include "rectanglepainter.h"
 #include "shapepainter.h"
@@ -47,4 +49,10 @@ void ShapePainter::handleShape( Rectangle *shape )
 //    m_painter.setBrush(brush);
 //    m_painter.drawRect(QRect(shape->point1(),shape->point2()));
 //    m_painter.restore();
+}
+
+void ShapePainter::handleShape(Image *shape)
+{
+    ImagePainter painter;
+    painter.draw(m_painter,shape);
 }

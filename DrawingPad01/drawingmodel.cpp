@@ -2,6 +2,7 @@
 
 #include "drawingmodel.h"
 #include "freehand.h"
+#include "image.h"
 #include "rectangle.h"
 #include "shapetypes.h"
 
@@ -76,6 +77,12 @@ Shape *DrawingModel::readShape(QDataStream &inStream)
     case SHAPE_TYPE_RECTANGLE:
     {
         shape = new Rectangle;
+        shape->readFrom(inStream);
+        break;
+    }
+    case SHAPE_TYPE_IMAGE:
+    {
+        shape = new Image;
         shape->readFrom(inStream);
         break;
     }

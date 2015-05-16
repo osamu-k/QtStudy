@@ -1,10 +1,19 @@
 #include <QDebug>
 #include <QPainter>
 
+// for Drag and Drop
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QFileInfo>
+#include <QMimeData>
+#include <QPainter>
+#include <QUrl>
+
 #include "drawingpad.h"
 #include "freehandmaker.h"
 #include "rectanglemaker.h"
 #include "shapepainter.h"
+#include "image.h"
 
 DrawingPad::DrawingPad(QWidget *parent)
     : QWidget(parent)
@@ -15,6 +24,8 @@ DrawingPad::DrawingPad(QWidget *parent)
 
     m_makerMap[SHAPE_FREEHAND] = new FreeHandMaker;
     m_makerMap[SHAPE_RECTANGLE] = new RectangleMaker;
+
+    setAcceptDrops(true);
 }
 
 DrawingPad::~DrawingPad()
@@ -60,6 +71,39 @@ void DrawingPad::mouseReleaseEvent( QMouseEvent *event )
         m_model->addShape( shape );
     }
     update();
+}
+
+void DrawingPad::dragEnterEvent(QDragEnterEvent *event)
+{
+    foreach( QUrl url, event->mimeData()->urls() ){
+        QString filename = url.toLocalFile();
+        QString suffix = QFileInfo(filename).suffix().toLower();
+        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
+            event->acceptProposedAction();
+            break;
+        }
+    }
+}
+
+void DrawingPad::dropEvent(QDropEvent *event)
+{
+    foreach(QUrl url,event->mimeData()->urls()){
+        QString filename = url.toLocalFile();
+        QString suffix = QFileInfo(filename).suffix().toLower();
+        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
+            event->acceptProposedAction();
+            loadPixmap(filename,event->pos());
+        }
+    }
+}
+
+void DrawingPad::loadPixmap(QString filename, QPoint position)
+{
+    QPixmap pixmap(filename);
+    Image *image = new Image();
+    image->setPixmap(pixmap);
+    image->setPosition(position);
+    m_model->addShape(image);
 }
 
 void DrawingPad::paintEvent(QPaintEvent *)

@@ -33,12 +33,17 @@ protected:
     void mouseMoveEvent( QMouseEvent *event );
     void mouseReleaseEvent( QMouseEvent *event );
 
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+
     void paintEvent(QPaintEvent *);
 
 private slots:
     void drawingChanged();
 
 private:
+    void loadPixmap(QString filename,QPoint position);
+
     DrawingModel *m_model;
     ShapeType m_shapeType;
     QMap<enum ShapeType, ShapeMaker *> m_makerMap;
