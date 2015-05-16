@@ -16,11 +16,13 @@ QMAKE_CXXFLAGS += -std=c++11 -stdlib=libc++
 
 SOURCES += broadcastlib001.cpp \
     broadcastserver.cpp \
-    broadcastclient.cpp
+    broadcastclient.cpp \
+    bytearraytransmitter.cpp
 
 HEADERS += broadcastlib001.h \
     broadcastserver.h \
-    broadcastclient.h
+    broadcastclient.h \
+    bytearraytransmitter.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

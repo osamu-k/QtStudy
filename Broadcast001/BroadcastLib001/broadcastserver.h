@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include "bytearraytransmitter.h"
 
 class BroadcastServer : public QObject
 {
@@ -18,14 +19,15 @@ public:
 
 private slots:
     void newConnection();
-    void dataReceived();
+//    void dataReceived();
+//    void broadcast(QString data);
+    void broadcast(QByteArray data);
     void disconnected();
 
 private:
-//    void broadcast(QString data);
-    void broadcast(QByteArray data);
     QTcpServer m_tcpServer;
-    QList<QTcpSocket *> m_clientSocketList;
+//    QList<QTcpSocket *> m_clientSocketList;
+    QList<ByteArrayTransmitter *> m_clientList;
 };
 
 #endif // BROADCASTSERVER_H

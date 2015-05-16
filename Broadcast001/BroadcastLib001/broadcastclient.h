@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QObject>
 #include <QTcpSocket>
+#include "bytearraytransmitter.h"
 
 class BroadcastClient : public QObject
 {
@@ -20,11 +21,12 @@ signals:
     void dataReceived(QByteArray data);
 
 private slots:
-    void connected();
-    void dataReceivedFromHost();
+//    void connected();
+//    void dataReceivedFromHost();
 
 private:
     QTcpSocket m_socket;
+    ByteArrayTransmitter m_transmitter;
 };
 
 #endif // BROADCASTCLIENT_H
