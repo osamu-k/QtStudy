@@ -1,6 +1,7 @@
 #ifndef DRAWINGPAD_H
 #define DRAWINGPAD_H
 
+#include <Qlist>
 #include <QMap>
 #include <QMouseEvent>
 #include <QPaintEvent>
@@ -9,6 +10,7 @@
 #include "drawingmodel.h"
 #include "shape.h"
 #include "shapemaker.h"
+#include "shapemanipulator.h"
 
 class DrawingPad : public QWidget
         //, public DrawingModelObserver
@@ -34,11 +36,14 @@ protected:
     void mouseReleaseEvent( QMouseEvent *event );
 
     void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
     void paintEvent(QPaintEvent *);
 
 private slots:
+    void newShape(Shape *shape);
     void drawingChanged();
 
 private:
@@ -47,6 +52,8 @@ private:
     DrawingModel *m_model;
     ShapeType m_shapeType;
     QMap<enum ShapeType, ShapeMaker *> m_makerMap;
+    QList<ShapeManipulator *> m_manipulatorList;
+    ShapeManipulator *m_dragAndDropManipulator;
 };
 
 #endif // DRAWINGPAD_H

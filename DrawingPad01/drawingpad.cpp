@@ -1,16 +1,9 @@
 #include <QDebug>
 #include <QPainter>
 
-// for Drag and Drop
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QFileInfo>
-#include <QMimeData>
-#include <QPainter>
-#include <QUrl>
-
 #include "drawingpad.h"
 #include "freehandmaker.h"
+#include "imagemanipulator.h"
 #include "rectanglemaker.h"
 #include "shapepainter.h"
 #include "image.h"
@@ -18,12 +11,18 @@
 DrawingPad::DrawingPad(QWidget *parent)
     : QWidget(parent)
     , m_shapeType(SHAPE_FREEHAND)
+    , m_dragAndDropManipulator(0)
 {
     setAutoFillBackground(true);
     setPalette(Qt::white);
 
     m_makerMap[SHAPE_FREEHAND] = new FreeHandMaker;
     m_makerMap[SHAPE_RECTANGLE] = new RectangleMaker;
+
+    ImageManipulator *imageManipulator = new ImageManipulator;
+    connect( imageManipulator, &ShapeManipulator::newShape, this, &DrawingPad::newShape );
+    connect( imageManipulator, &ShapeManipulator::updateRegion, this, (void (QWidget::*)(const QRegion &))&QWidget::update);
+    m_manipulatorList << imageManipulator;
 
     setAcceptDrops(true);
 }
@@ -75,25 +74,33 @@ void DrawingPad::mouseReleaseEvent( QMouseEvent *event )
 
 void DrawingPad::dragEnterEvent(QDragEnterEvent *event)
 {
-    foreach( QUrl url, event->mimeData()->urls() ){
-        QString filename = url.toLocalFile();
-        QString suffix = QFileInfo(filename).suffix().toLower();
-        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
-            event->acceptProposedAction();
+    foreach( ShapeManipulator *manipulator, m_manipulatorList ){
+        if( manipulator->dragEnterEvent(event) ){
+            m_dragAndDropManipulator = manipulator;
             break;
         }
     }
 }
 
+void DrawingPad::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    if( m_dragAndDropManipulator ){
+        m_dragAndDropManipulator->dragLeaveEvent(event);
+    }
+}
+
+void DrawingPad::dragMoveEvent(QDragMoveEvent *event)
+{
+    if( m_dragAndDropManipulator ){
+        m_dragAndDropManipulator->dragMoveEvent(event);
+    }
+}
+
 void DrawingPad::dropEvent(QDropEvent *event)
 {
-    foreach(QUrl url,event->mimeData()->urls()){
-        QString filename = url.toLocalFile();
-        QString suffix = QFileInfo(filename).suffix().toLower();
-        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
-            event->acceptProposedAction();
-            loadPixmap(filename,event->pos());
-        }
+    if( m_dragAndDropManipulator ){
+        m_dragAndDropManipulator->dropEvent(event);
+        m_dragAndDropManipulator = 0;
     }
 }
 
@@ -120,12 +127,23 @@ void DrawingPad::paintEvent(QPaintEvent *)
     if( m_makerMap[m_shapeType] ){
         m_makerMap[m_shapeType]->draw(painter);
     }
+
+    if( m_dragAndDropManipulator ){
+        m_dragAndDropManipulator->draw(painter);
+    }
 }
 
 //void DrawingPad::notifyDrawingChanged()
 //{
 //    update();
 //}
+
+void DrawingPad::newShape(Shape *shape)
+{
+    if( m_model ){
+        m_model->addShape(shape);
+    }
+}
 
 void DrawingPad::drawingChanged()
 {
