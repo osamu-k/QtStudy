@@ -16,9 +16,11 @@ public:
     void setSize(QSize size);
     QSize size();
 //    void draw(QPainter &painter);
-    void handle(ShapeHandler *handler);
+    QRect boundingRect();
+    void shift(QPoint diff);
     void writeTo( QDataStream &outStream );
     void readFrom( QDataStream &inStream );
+    void handle(ShapeHandler *handler);
 
 private:
     QPixmap m_pixmap;

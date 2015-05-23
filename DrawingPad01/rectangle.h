@@ -19,9 +19,11 @@ public:
     void setFillColor(QColor color);
     QColor fillColor();
 //    void draw(QPainter &painter);
-    void handle(ShapeHandler *handler);
+    QRect boundingRect();
+    void shift(QPoint diff);
     void writeTo( QDataStream &outStream );
     void readFrom( QDataStream &inStream );
+    void handle(ShapeHandler *handler);
 
 private:
     QPoint m_point1;

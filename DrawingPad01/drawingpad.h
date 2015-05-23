@@ -19,7 +19,9 @@ class DrawingPad : public QWidget
 
 public:
     enum ShapeType {
+        SHAPE_UNKNOWN,
         SHAPE_FREEHAND,
+        SHAPE_IMAGE,
         SHAPE_RECTANGLE
     };
 
@@ -29,6 +31,8 @@ public:
     void setShapeType(ShapeType shapeType);
 
 //    void notifyDrawingChanged();
+public:
+    void moveShape();
 
 protected:
     void mousePressEvent( QMouseEvent *event );
@@ -51,6 +55,8 @@ private:
 
     DrawingModel *m_model;
     ShapeType m_shapeType;
+    Shape *m_selectedShape;
+    QPoint m_lastPos;
     QMap<enum ShapeType, ShapeMaker *> m_makerMap;
     QList<ShapeManipulator *> m_manipulatorList;
     ShapeManipulator *m_dragAndDropManipulator;

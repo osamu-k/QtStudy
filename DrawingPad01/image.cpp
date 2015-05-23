@@ -44,6 +44,17 @@ QSize Image::size()
 }
 
 //    void draw(QPainter &painter);
+
+QRect Image::boundingRect()
+{
+    return QRect(m_position,m_size);
+}
+
+void Image::shift(QPoint diff)
+{
+    m_position += diff;
+}
+
 void Image::handle(ShapeHandler *handler)
 {
     handler->handleShape(this);

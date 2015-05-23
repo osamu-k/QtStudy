@@ -23,6 +23,7 @@ public:
     DrawingModel();
     ~DrawingModel();
     void addShape(Shape *shape);
+    void shiftShape(Shape *shape, QPoint diff);
     QList<Shape *> shapeList();
     void clear();
     void writeTo( QDataStream &outStream );
@@ -31,6 +32,7 @@ public:
     void disconnectFromtHost();
 //    void addObserver(DrawingModelObserver *observer);
 //    void removeObserver(DrawingModelObserver *observer);
+    Shape *select(QPoint pos);
 
 signals:
     void drawingChanged();

@@ -6,11 +6,13 @@
 #include "imagemanipulator.h"
 #include "rectanglemaker.h"
 #include "shapepainter.h"
+#include "shapetypes.h"
 #include "image.h"
 
 DrawingPad::DrawingPad(QWidget *parent)
     : QWidget(parent)
     , m_shapeType(SHAPE_FREEHAND)
+    , m_selectedShape(0)
     , m_dragAndDropManipulator(0)
 {
     setAutoFillBackground(true);
@@ -47,29 +49,58 @@ void DrawingPad::setShapeType(ShapeType shapeType)
 void DrawingPad::mousePressEvent( QMouseEvent *event )
 {
     qDebug() << __FUNCTION__ << ":" << __LINE__;
-    if( m_makerMap[m_shapeType] ){
+//    if( m_makerMap[m_shapeType] ){
+    if( m_makerMap.contains( m_shapeType ) ){
         m_makerMap[m_shapeType]->begin(event->pos());
+        update();
     }
-    update();
+    else{
+        Shape *shape = m_model->select(event->pos());
+        if( shape ){
+            m_selectedShape = shape;
+            m_lastPos = event->pos();
+        }
+    }
 }
 
 void DrawingPad::mouseMoveEvent( QMouseEvent *event )
 {
     qDebug() << __FUNCTION__ << ":" << __LINE__;
-    if( m_makerMap[m_shapeType] ){
+    //    if( m_makerMap[m_shapeType] ){
+    if( m_makerMap.contains( m_shapeType ) ){
         m_makerMap[m_shapeType]->move(event->pos());
+        update();
     }
-    update();
+    else if( m_selectedShape ){
+        QPoint diff = event->pos() - m_lastPos;
+        QRegion region(m_selectedShape->boundingRect());
+        m_selectedShape->shift(diff);
+        region.united(m_selectedShape->boundingRect());
+        update(region);
+        m_lastPos = event->pos();
+
+        m_model->shiftShape(m_selectedShape,diff);
+    }
 }
 
 void DrawingPad::mouseReleaseEvent( QMouseEvent *event )
 {
     qDebug() << __FUNCTION__ << ":" << __LINE__;
-    if( m_makerMap[m_shapeType] ){
+    //    if( m_makerMap[m_shapeType] ){
+    if( m_makerMap.contains( m_shapeType ) ){
         Shape *shape = m_makerMap[m_shapeType]->end(event->pos());
         m_model->addShape( shape );
+        update();
     }
-    update();
+    else if( m_selectedShape ){
+        QPoint diff = event->pos() - m_lastPos;
+        QRegion region(m_selectedShape->boundingRect());
+        m_selectedShape->shift(diff);
+        region.united(m_selectedShape->boundingRect());
+        update(region);
+        m_model->shiftShape(m_selectedShape,diff);
+        m_selectedShape = 0;
+    }
 }
 
 void DrawingPad::dragEnterEvent(QDragEnterEvent *event)
@@ -124,7 +155,8 @@ void DrawingPad::paintEvent(QPaintEvent *)
         shape->handle(&shapePainter);
     }
 
-    if( m_makerMap[m_shapeType] ){
+//    if( m_makerMap[m_shapeType] ){
+    if( m_makerMap.contains( m_shapeType ) ){
         m_makerMap[m_shapeType]->draw(painter);
     }
 
@@ -148,4 +180,9 @@ void DrawingPad::newShape(Shape *shape)
 void DrawingPad::drawingChanged()
 {
     update();
+}
+
+void DrawingPad::moveShape()
+{
+    m_shapeType = SHAPE_UNKNOWN;
 }

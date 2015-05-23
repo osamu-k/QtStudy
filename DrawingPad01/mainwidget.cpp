@@ -18,6 +18,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     QPushButton *buttonSave = new QPushButton("Save");
     QPushButton *buttonOpen = new QPushButton("Open");
     QPushButton *buttonClear = new QPushButton("Clear");
+    QPushButton *buttonMove = new QPushButton("Move");
     QPushButton *buttonConnect = new QPushButton("Connect");
     QPushButton *buttonDisconnect = new QPushButton("Disconnect");
     QHBoxLayout *buttonLayout = new QHBoxLayout;
@@ -26,6 +27,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     buttonLayout->addWidget(buttonSave);
     buttonLayout->addWidget(buttonOpen);
     buttonLayout->addWidget(buttonClear);
+    buttonLayout->addWidget(buttonMove);
     buttonLayout->addWidget(buttonConnect);
     buttonLayout->addWidget(buttonDisconnect);
 
@@ -61,6 +63,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
              &QPushButton::clicked,
              this,
              &MainWidget::clear );
+
+    connect( buttonMove,
+             &QPushButton::clicked,
+             m_pad,
+             &DrawingPad::moveShape );
 
     connect( buttonConnect,
              &QPushButton::clicked,

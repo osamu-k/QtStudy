@@ -10,6 +10,7 @@
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
+#include <QMouseEvent>
 #include <QPainter>
 
 class ShapeManipulator : public QObject
@@ -24,7 +25,8 @@ public:
     virtual bool dragLeaveEvent(QDragLeaveEvent *){ return false; }
     virtual bool dragMoveEvent(QDragMoveEvent *){ return false; }
     virtual bool dropEvent(QDropEvent *){ return false; }
-    virtual void draw(QPainter &painter){}
+
+    virtual void draw(QPainter &){}
 
 signals:
     void updateRegion(QRegion &region);

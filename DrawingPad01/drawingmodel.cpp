@@ -18,14 +18,25 @@ DrawingModel::~DrawingModel()
 
 void DrawingModel::addShape(Shape *shape)
 {
-    m_shapeList << shape;
+//    m_shapeList << shape;
 
     QByteArray byteArray;
     QDataStream outStream(&byteArray,QIODevice::WriteOnly);
+    outStream << QString("new");
     shape->writeTo(outStream);
     m_broadcastClient.sendData(byteArray);
 //    notify();
     emit drawingChanged();
+}
+
+void   DrawingModel::shiftShape(Shape *shape, QPoint diff)
+{
+    QByteArray byteArray;
+    QDataStream outStream(&byteArray,QIODevice::WriteOnly);
+    outStream << QString("shift");
+    outStream << shape->id();
+    outStream << diff;
+    m_broadcastClient.sendData(byteArray);
 }
 
 QList<Shape *> DrawingModel::shapeList()
@@ -130,9 +141,41 @@ void DrawingModel::disconnectFromtHost()
 void DrawingModel::dataReceived(QByteArray data)
 {
     QDataStream inStream(data);
-    Shape *shape = readShape(inStream);
-    if( shape ){
-        m_shapeList << shape;
-        emit drawingChanged();
+    QString command;
+    inStream >> command;
+    if( command == "new" ){
+        Shape *shape = readShape(inStream);
+        if( shape ){
+            m_shapeList << shape;
+            emit drawingChanged();
+        }
     }
+    else if( command == "shift" ){
+        qDebug() << "Shift received";
+        qint64 id;
+        QPoint diff;
+        inStream >> id;
+        inStream >> diff;
+        qDebug() << "id = " << id << " diff = " << diff;
+        foreach(Shape *shape, m_shapeList){
+            qDebug() << "shape->id() = " << shape->id();
+            if( shape->id() == id ){
+                shape->shift(diff);
+                emit drawingChanged();
+                break;
+            }
+        }
+    }
+}
+
+Shape *DrawingModel::select(QPoint pos)
+{
+    QList<Shape*>::iterator it = m_shapeList.end();
+    while(it != m_shapeList.begin()){
+        it--;
+        if( (*it)->hitTest(pos) ){
+            return (*it);
+        }
+    }
+    return 0;
 }

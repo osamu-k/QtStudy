@@ -1,6 +1,8 @@
 #include "imagemanipulator.h"
 #include "image.h"
 
+#include <QDebug>
+
 // for Drag and Drop
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -32,6 +34,20 @@ bool ImageManipulator::dragEnterEvent(QDragEnterEvent *event)
             return true;
         }
     }
+    qDebug() << "event->mimeData()->hasImage() =" << event->mimeData()->hasImage();
+    if( event->mimeData()->hasImage() ){
+        event->acceptProposedAction();
+        QImage image = qvariant_cast<QImage>(event->mimeData()->imageData());
+        qDebug() << "Image size = (" << image.width() << "," << image.height() << ")";
+        QPixmap pixmap = QPixmap::fromImage(image);
+        qDebug() << "Pixmap size = (" << pixmap.width() << "," << pixmap.height() << ")";
+        m_image = new Image();
+        m_image->setPixmap(pixmap);
+        m_image->setPosition(event->pos());
+        QRegion region(QRect(m_image->position(),m_image->size()));
+        emit updateRegion(region);
+        return true;
+    }
     return false;
 }
 
@@ -50,39 +66,61 @@ bool ImageManipulator::dragLeaveEvent(QDragLeaveEvent *)
 
 bool ImageManipulator::dragMoveEvent(QDragMoveEvent *event)
 {
-    foreach( QUrl url, event->mimeData()->urls() ){
-        QString filename = url.toLocalFile();
-        QString suffix = QFileInfo(filename).suffix().toLower();
-        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
-            event->acceptProposedAction();
-            QRegion region(QRect(m_image->position(),m_image->size()));
-            m_image->setPosition(event->pos());
-            region = region.united(QRect(m_image->position(),m_image->size()));
-            emit updateRegion(region);
-            return true;
-        }
+    if( m_image ){
+        event->acceptProposedAction();
+        QRegion region(QRect(m_image->position(),m_image->size()));
+        m_image->setPosition(event->pos());
+        region = region.united(QRect(m_image->position(),m_image->size()));
+        emit updateRegion(region);
+        return true;
     }
     return false;
+//    foreach( QUrl url, event->mimeData()->urls() ){
+//        QString filename = url.toLocalFile();
+//        QString suffix = QFileInfo(filename).suffix().toLower();
+//        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
+//            event->acceptProposedAction();
+//            QRegion region(QRect(m_image->position(),m_image->size()));
+//            m_image->setPosition(event->pos());
+//            region = region.united(QRect(m_image->position(),m_image->size()));
+//            emit updateRegion(region);
+//            return true;
+//        }
+//    }
+//    return false;
 }
 
 bool ImageManipulator::dropEvent(QDropEvent *event)
 {
-    foreach(QUrl url,event->mimeData()->urls()){
-        QString filename = url.toLocalFile();
-        QString suffix = QFileInfo(filename).suffix().toLower();
-        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
-            event->acceptProposedAction();
+    if( m_image ){
+        event->acceptProposedAction();
 
-            QRegion region(QRect(m_image->position(),m_image->size()));
-            m_image->setPosition(event->pos());
-            emit updateRegion(region);
+        QRegion region(QRect(m_image->position(),m_image->size()));
+        m_image->setPosition(event->pos());
+        emit updateRegion(region);
 
-            emit newShape(m_image);
-            m_image = 0;
-            return true;
-        }
+        emit newShape(m_image);
+        m_image = 0;
+        return true;
     }
     return false;
+
+//    foreach(QUrl url,event->mimeData()->urls()){
+//        QString filename = url.toLocalFile();
+//        QString suffix = QFileInfo(filename).suffix().toLower();
+//        if((suffix=="png")||(suffix=="jpg")||(suffix=="jpeg")){
+//            event->acceptProposedAction();
+
+//            QRegion region(QRect(m_image->position(),m_image->size()));
+//            m_image->setPosition(event->pos());
+//            emit updateRegion(region);
+
+//            emit newShape(m_image);
+//            m_image = 0;
+//            return true;
+//        }
+//    }
+//    return false;
 }
 
 void ImageManipulator::loadPixmap(QString filename, QPoint position)

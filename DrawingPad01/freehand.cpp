@@ -22,6 +22,35 @@ QVector<QPoint> FreeHand::points()
     return m_pointList;
 }
 
+QRect FreeHand::boundingRect()
+{
+    int x1 = 0;
+    int y1 = 0;
+    int x2 = 0;
+    int y2 = 0;
+
+    if( m_pointList.size() > 0){
+        QPoint p0 = m_pointList[0];
+        x1 = x2 = p0.x();
+        y1 = y2 = p0.y();
+        for( int i = 1; i < m_pointList.size(); i++ ){
+            QPoint p = m_pointList[i];
+            if( p.x() < x1 ) x1 = p.x();
+            if( p.y() < y1 ) y1 = p.y();
+            if( x2 < p.x() ) x2 = p.x();
+            if( y2 < p.y() ) y2 = p.y();
+        }
+    }
+    return QRect(x1,y1,x2-x1,y2-y1).adjusted( - m_width, - m_width, m_width, m_width );
+}
+
+void FreeHand::shift(QPoint diff)
+{
+    for( int i = 0; i < m_pointList.size(); i++ ){
+        m_pointList[i] += diff;
+    }
+}
+
 //void FreeHand::draw(QPainter &painter)
 //{
 //    painter.save();

@@ -1,5 +1,6 @@
 #include "rectangle.h"
 #include "shapetypes.h"
+#include <algorithm>
 
 Rectangle::Rectangle()
     : Shape(SHAPE_TYPE_RECTANGLE)
@@ -54,6 +55,34 @@ QColor Rectangle::fillColor()
 //    painter.drawRect(QRect(m_point1,m_point2));
 //    painter.restore();
 //}
+
+QRect Rectangle::boundingRect()
+{
+    int x1,y1,x2,y2;
+    if( m_point1.x() < m_point2.x() ){
+        x1 = m_point1.x();
+        x2 = m_point2.x();
+    }
+    else{
+        x1 = m_point2.x();
+        x2 = m_point1.x();
+    }
+    if( m_point1.y() < m_point2.y() ){
+        y1 = m_point1.y();
+        y2 = m_point2.y();
+    }
+    else{
+        y1 = m_point2.y();
+        y2 = m_point1.y();
+    }
+    return QRect(x1,y1,(x2-x1),(y2-y1));
+}
+
+void Rectangle::shift(QPoint diff)
+{
+    m_point1 += diff;
+    m_point2 += diff;
+}
 
 void Rectangle::handle(ShapeHandler *handler)
 {
