@@ -312,7 +312,7 @@ void DrawingPad::connectButtonClicked()
 void DrawingPad::newConnection( ServerSocket *serverSocket )
 {
     qDebug() << "New connection ! isOpen() = " << serverSocket->isOpen();
-    connect( serverSocket, SIGNAL(received(QByteArray)), m_canvas, SLOT(addData(QByteArray)) );
+    connect( serverSocket, SIGNAL(received(QArrayArray)), m_canvas, SLOT(addData(QByteArray)) );
     connect( m_canvas, SIGNAL(dataAdded(QByteArray)), serverSocket, SLOT(broadcastData(QByteArray)) );
 }
 
