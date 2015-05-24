@@ -13,10 +13,8 @@ Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
     , m_stateNum1Waiting(this)
     , m_stateNum1IntegerPart(this)
-//    , m_stateNum1DecimalPart(this)
     , m_stateNum2Waiting(this)
     , m_stateNum2IntegerPart(this)
-//    , m_stateNum2DecimalPart(this)
     , m_stateShowResult(this)
     , m_state(STATE_NUM1_WAITING)
 {
@@ -39,7 +37,6 @@ Calculator::Calculator(QWidget *parent)
     QPushButton *button8 = createNumberButton( 8 );
     QPushButton *button9 = createNumberButton( 9 );
 
-//    QPushButton *buttonDot = createDotButton();
     QPushButton *buttonSign = createSignButton();
 
     QPushButton *buttonAdd = createAddButton();
@@ -75,7 +72,6 @@ Calculator::Calculator(QWidget *parent)
     gridLayout->addWidget(buttonAdd ,3,3);
 
     gridLayout->addWidget(button0   ,4,0,1,3);
-//    gridLayout->addWidget(buttonDot ,4,2);
     gridLayout->addWidget(buttonEq  ,4,3);
 
     vboxLayout->addLayout(gridLayout);
@@ -83,13 +79,10 @@ Calculator::Calculator(QWidget *parent)
 
     m_stateMap[STATE_NUM1_WAITING     ] = &m_stateNum1Waiting;
     m_stateMap[STATE_NUM1_INTEGER_PART] = &m_stateNum1IntegerPart;
-//    m_stateMap[STATE_NUM1_DECIMAL_PART] = &m_stateNum1DecimalPart;
     m_stateMap[STATE_NUM2_WAITING     ] = &m_stateNum2Waiting;
     m_stateMap[STATE_NUM2_INTEGER_PART] = &m_stateNum2IntegerPart;
-//    m_stateMap[STATE_NUM2_DECIMAL_PART] = &m_stateNum2DecimalPart;
     m_stateMap[STATE_SHOW_RESULT      ] = &m_stateShowResult;
 
-//    m_state = &m_stateNum1Waiting;
     m_state = STATE_NUM1_WAITING;
     m_stateMap[ m_state ]->disableIrrelevantButtons();
 }
@@ -127,16 +120,6 @@ QPushButton *Calculator::createNumberButton( int i )
              [=](){ numberButtonClicked(label); } );
     return button;
 }
-
-//QPushButton *Calculator::createDotButton()
-//{
-//    QString label(".");
-//    QString objectName( "buttonDot" );
-//    QPushButton *button = new QPushButton(label);
-//    button->setObjectName(objectName);
-//    connect( button, &QPushButton::clicked, this, &Calculator::dotButtonClicked );
-//    return button;
-//}
 
 QPushButton *Calculator::createSignButton()
 {
@@ -221,11 +204,6 @@ QPushButton *Calculator::getNumberButton( int i )
     return findChild<QPushButton *>( objectName );
 }
 
-//QPushButton *Calculator::getDotButton()
-//{
-//    return findChild<QPushButton *>( "buttonDot" );
-//}
-
 QPushButton *Calculator::getSignButton()
 {
     return findChild<QPushButton *>( "buttonSign" );
@@ -276,11 +254,6 @@ void Calculator::numberButtonClicked( QString digit )
     m_stateMap[m_state]->numberButtonClicked(digit);
 }
 
-//void Calculator::dotButtonClicked()
-//{
-//    m_stateMap[m_state]->dotButtonClicked();
-//}
-
 void Calculator::signButtonClicked()
 {
     m_stateMap[m_state]->signButtonClicked();
@@ -317,7 +290,6 @@ Calculator::State::~State()
 
 void Calculator::State::disableIrrelevantButtons()
 {
-//    m_calculator->getDotButton()  ->setDisabled(false);
     m_calculator->getAddButton()  ->setDisabled(false);
     m_calculator->getSubButton()  ->setDisabled(false);
     m_calculator->getMulButton()  ->setDisabled(false);
@@ -329,10 +301,6 @@ void Calculator::State::numberButtonClicked(QString digit)
 {
     getLineInput()->setText( getLineInput()->text() + digit );
 }
-
-//void Calculator::State::dotButtonClicked()
-//{
-//}
 
 void Calculator::State::signButtonClicked()
 {
@@ -402,14 +370,6 @@ void Calculator::StateNum1Waiting::numberButtonClicked(QString digit)
     setState( STATE_NUM1_INTEGER_PART );
 }
 
-//void Calculator::StateNum1Waiting::dotButtonClicked()
-//{
-//    QString instr = getLineInput()->text();
-//    instr += "0.";
-//    getLineInput()->setText( instr );
-//    setState( STATE_NUM1_DECIMAL_PART );
-//}
-
 void Calculator::StateNum1Waiting::signButtonClicked()
 {
     State::signButtonClicked();
@@ -455,14 +415,6 @@ void Calculator::StateNum1IntegerPart::numberButtonClicked(QString digit)
     State::numberButtonClicked(digit);
 }
 
-//void Calculator::StateNum1IntegerPart::dotButtonClicked()
-//{
-//    QString instr = getLineInput()->text();
-//    instr += ".";
-//    getLineInput()->setText( instr );
-//    setState( STATE_NUM1_DECIMAL_PART );
-//}
-
 void Calculator::StateNum1IntegerPart::signButtonClicked()
 {
     State::signButtonClicked();
@@ -490,58 +442,6 @@ void Calculator::StateNum1IntegerPart::clearButtonClicked()
     setState( STATE_NUM1_WAITING );
 }
 
-//Calculator::StateNum1DecimalPart::StateNum1DecimalPart(Calculator *calculator)
-//    : State(calculator,"NUM1_DECIMAL_PART")
-//{
-//}
-
-//Calculator::StateNum1DecimalPart::~StateNum1DecimalPart()
-//{
-//}
-
-//void Calculator::StateNum1DecimalPart::disableIrrelevantButtons()
-//{
-//    State::disableIrrelevantButtons();
-//    m_calculator->getDotButton()  ->setDisabled(true);
-//    m_calculator->getEqualButton()->setDisabled(true);
-//}
-
-//void Calculator::StateNum1DecimalPart::numberButtonClicked(QString digit)
-//{
-//    State::numberButtonClicked(digit);
-//}
-//void Calculator::StateNum1DecimalPart::dotButtonClicked()
-//{
-//    // Nothing to do
-//}
-
-//void Calculator::StateNum1DecimalPart::signButtonClicked()
-//{
-//    State::signButtonClicked();
-//}
-
-//void Calculator::StateNum1DecimalPart::operatorButtonClicked(QString label, func_ptr func)
-//{
-//    m_calculator->m_currentData = getLineInput()->text();
-//    State::operatorButtonClicked(label,func);
-//}
-
-//void Calculator::StateNum1DecimalPart::equalButtonClicked()
-//{
-//    // Nothing to do.
-//}
-
-//void Calculator::StateNum1DecimalPart::allClearButtonClicked()
-//{
-//    State::allClearButtonClicked();
-//}
-
-//void Calculator::StateNum1DecimalPart::clearButtonClicked()
-//{
-//    getLineInput()->clear();
-//    setState( STATE_NUM1_WAITING );
-//}
-
 Calculator::StateNum2Waiting::StateNum2Waiting(Calculator *calculator)
     : State(calculator,"NUM2_WAITING")
 {
@@ -566,14 +466,6 @@ void Calculator::StateNum2Waiting::numberButtonClicked(QString digit)
     State::numberButtonClicked(digit);
     setState( STATE_NUM2_INTEGER_PART );
 }
-
-//void Calculator::StateNum2Waiting::dotButtonClicked()
-//{
-//    QString instr = getLineInput()->text();
-//    instr += "0.";
-//    getLineInput()->setText( instr );
-//    setState( STATE_NUM2_DECIMAL_PART );
-//}
 
 void Calculator::StateNum2Waiting::signButtonClicked()
 {
@@ -619,14 +511,6 @@ void Calculator::StateNum2IntegerPart::numberButtonClicked(QString digit)
     State::numberButtonClicked(digit);
 }
 
-//void Calculator::StateNum2IntegerPart::dotButtonClicked()
-//{
-//    QString instr = getLineInput()->text();
-//    instr += ".";
-//    getLineInput()->setText( instr );
-//    setState( STATE_NUM2_DECIMAL_PART );
-//}
-
 void Calculator::StateNum2IntegerPart::signButtonClicked()
 {
     State::signButtonClicked();
@@ -663,63 +547,6 @@ void Calculator::StateNum2IntegerPart::clearButtonClicked()
     setState( STATE_NUM2_WAITING );
 }
 
-//Calculator::StateNum2DecimalPart::StateNum2DecimalPart(Calculator *calculator)
-//    : State(calculator,"NUM2_DECIMAL_PART")
-//{
-//}
-
-//Calculator::StateNum2DecimalPart::~StateNum2DecimalPart()
-//{
-//}
-
-//void Calculator::StateNum2DecimalPart::disableIrrelevantButtons()
-//{
-//    State::disableIrrelevantButtons();
-//    m_calculator->getDotButton()->setDisabled(true);
-//}
-
-//void Calculator::StateNum2DecimalPart::numberButtonClicked(QString digit)
-//{
-//    State::numberButtonClicked(digit);
-//}
-
-//void Calculator::StateNum2DecimalPart::dotButtonClicked()
-//{
-//    // Nothing to do
-//}
-
-//void Calculator::StateNum2DecimalPart::signButtonClicked()
-//{
-//    State::signButtonClicked();
-//}
-
-//void Calculator::StateNum2DecimalPart::operatorButtonClicked(QString label, func_ptr func)
-//{
-//    State::operatorButtonClicked(label,func);
-//}
-
-//void Calculator::StateNum2DecimalPart::equalButtonClicked()
-//{
-//    double answer = m_calculator->m_operation(
-//                        m_calculator->m_currentData.toDouble(),
-//                        getLineInput()->text().toDouble() );
-//    getLineDisplay()->setText( QString::number(answer) );
-//    getLineInput()->clear();
-//    m_calculator->m_operation = 0;
-//    setState( STATE_SHOW_RESULT );
-//}
-
-//void Calculator::StateNum2DecimalPart::allClearButtonClicked()
-//{
-//    State::allClearButtonClicked();
-//}
-
-//void Calculator::StateNum2DecimalPart::clearButtonClicked()
-//{
-//    getLineInput()->clear();
-//    setState( STATE_NUM2_WAITING );
-//}
-
 Calculator::StateShowResult::StateShowResult(Calculator *calculator)
     : State(calculator,"SHOW_RESULT")
 {
@@ -740,14 +567,6 @@ void Calculator::StateShowResult::numberButtonClicked(QString digit)
     State::numberButtonClicked(digit);
     setState( STATE_NUM1_INTEGER_PART );
 }
-
-//void Calculator::StateShowResult::dotButtonClicked()
-//{
-//    QString instr = getLineInput()->text();
-//    instr += "0.";
-//    getLineInput()->setText( instr );
-//    setState( STATE_NUM1_DECIMAL_PART );
-//}
 
 void Calculator::StateShowResult::signButtonClicked()
 {

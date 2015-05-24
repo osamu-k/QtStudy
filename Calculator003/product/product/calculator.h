@@ -28,7 +28,6 @@ private:
 
 private slots:
     void numberButtonClicked(QString digit);
-//    void dotButtonClicked();
     void signButtonClicked();
     void operatorButtonClicked(QString label, func_ptr func);
     void equalButtonClicked();
@@ -41,7 +40,6 @@ private:
     QLineEdit *createLineEdit(QString objectName);
 
     QPushButton *createNumberButton( int i );
-//    QPushButton *createDotButton();
     QPushButton *createSignButton();
     QPushButton *createAddButton();
     QPushButton *createSubButton();
@@ -56,7 +54,6 @@ private:
     QLineEdit *getLineInput();
 
     QPushButton *getNumberButton( int i );
-//    QPushButton *getDotButton();
     QPushButton *getSignButton();
     QPushButton *getAddButton();
     QPushButton *getSubButton();
@@ -71,10 +68,8 @@ private:
     enum state{
         STATE_NUM1_WAITING,
         STATE_NUM1_INTEGER_PART,
-//        STATE_NUM1_DECIMAL_PART,
         STATE_NUM2_WAITING,
         STATE_NUM2_INTEGER_PART,
-//        STATE_NUM2_DECIMAL_PART,
         STATE_SHOW_RESULT
     };
 
@@ -88,7 +83,6 @@ private:
         virtual ~State();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
@@ -109,7 +103,6 @@ private:
         virtual ~StateNum1Waiting();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
@@ -123,27 +116,12 @@ private:
         virtual ~StateNum1IntegerPart();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
         virtual void allClearButtonClicked();
         virtual void clearButtonClicked();
     };
-//    class StateNum1DecimalPart : public State
-//    {
-//    public:
-//        StateNum1DecimalPart(Calculator *calculator);
-//        virtual ~StateNum1DecimalPart();
-//        virtual void disableIrrelevantButtons();
-//        virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
-//        virtual void signButtonClicked();
-//        virtual void operatorButtonClicked(QString label, func_ptr func);
-//        virtual void equalButtonClicked();
-//        virtual void allClearButtonClicked();
-//        virtual void clearButtonClicked();
-//    };
     class StateNum2Waiting : public State
     {
     public:
@@ -151,7 +129,6 @@ private:
         virtual ~StateNum2Waiting();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
@@ -165,27 +142,12 @@ private:
         virtual ~StateNum2IntegerPart();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
         virtual void allClearButtonClicked();
         virtual void clearButtonClicked();
     };
-//    class StateNum2DecimalPart : public State
-//    {
-//    public:
-//        StateNum2DecimalPart(Calculator *calculator);
-//        virtual ~StateNum2DecimalPart();
-//        virtual void disableIrrelevantButtons();
-//        virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
-//        virtual void signButtonClicked();
-//        virtual void operatorButtonClicked(QString label, func_ptr func);
-//        virtual void equalButtonClicked();
-//        virtual void allClearButtonClicked();
-//        virtual void clearButtonClicked();
-//    };
     class StateShowResult : public State
     {
     public:
@@ -193,7 +155,6 @@ private:
         virtual ~StateShowResult();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-//        virtual void dotButtonClicked();
         virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
         virtual void equalButtonClicked();
@@ -203,16 +164,13 @@ private:
 
     StateNum1Waiting     m_stateNum1Waiting;
     StateNum1IntegerPart m_stateNum1IntegerPart;
-//    StateNum1DecimalPart m_stateNum1DecimalPart;
     StateNum2Waiting     m_stateNum2Waiting;
     StateNum2IntegerPart m_stateNum2IntegerPart;
-//    StateNum2DecimalPart m_stateNum2DecimalPart;
     StateShowResult      m_stateShowResult;
 
     QMap<enum state, State *> m_stateMap;
 
     enum state m_state;
-//    State *m_state;
 };
 
 #endif // CALCULATOR_H
