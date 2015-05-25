@@ -30,23 +30,16 @@ private Q_SLOTS:
     }
 
     void testInputNumber();
-    void testInputDecimalNumber();
     void testInputNumberPlus();
     void testInputNumberPlusNumber();
     void testInputNumberPlusNumberEq();
     void testInputNumberMinusNumberEq();
     void testInputNumberMultiplyNumberEq();
     void testInputNumberDivideNumberEq();
-    void testInputDecimalPlusDecimalEq();
-    void testInputDecimalMinusDecimalEq();
-    void testInputDecimalMultiplyDecimalEq();
-    void testInputDecimalDivideDecimalEq();
     void testInputSign();
     void testInputSignSign();
     void testInputNumberSign();
     void testInputNumberSignSign();
-    void testInputDot();
-    void testInputSignDot();
     void testInputSignNumberPlusSignNumberEq();
     void testInputNumberPlusNumberPlusNumberEq();
 
@@ -75,13 +68,6 @@ void TestTest::testInputNumber()
 {
     clickString("123");
     assertInput("123");
-    assertDisplay("");
-}
-
-void TestTest::testInputDecimalNumber()
-{
-    clickString("123.45");
-    assertInput("123.45");
     assertDisplay("");
 }
 
@@ -127,34 +113,6 @@ void TestTest::testInputNumberDivideNumberEq()
     assertDisplay(QString::number(123.0*45.0));
 }
 
-void TestTest::testInputDecimalPlusDecimalEq()
-{
-    clickString("123.45+67.890=");
-    assertInput("");
-    assertDisplay(QString::number(123.45+67.890));
-}
-
-void TestTest::testInputDecimalMinusDecimalEq()
-{
-    clickString("123.45-67.890=");
-    assertInput("");
-    assertDisplay(QString::number(123.45-67.890));
-}
-
-void TestTest::testInputDecimalMultiplyDecimalEq()
-{
-    clickString("123.45*67.890=");
-    assertInput("");
-    assertDisplay(QString::number(123.45*67.890));
-}
-
-void TestTest::testInputDecimalDivideDecimalEq()
-{
-    clickString("123.45/67.890=");
-    assertInput("");
-    assertDisplay(QString::number(123.45/67.890));
-}
-
 void TestTest::testInputSign()
 {
     clickString("S");
@@ -183,20 +141,6 @@ void TestTest::testInputNumberSignSign()
     assertDisplay("");
 }
 
-void TestTest::testInputDot()
-{
-    clickString(".");
-    assertInput("0.");
-    assertDisplay("");
-}
-
-void TestTest::testInputSignDot()
-{
-    clickString("S.");
-    assertInput("-0.");
-    assertDisplay("");
-}
-
 void TestTest::testInputSignNumberPlusSignNumberEq()
 {
     clickString("123S+45S=");
@@ -215,11 +159,11 @@ void TestTest::clickButton(QString name)
 {
     QWidget *button1 = calculator->findChild<QWidget*>(name);
     QVERIFY2(button1 != 0, QString("could not find \"%1\".").arg(name).toLatin1().constData() );
-    //QTest::qWait( 200 );
+    QTest::qWait( 200 );
     QTest::mousePress(button1,Qt::LeftButton);
-    //QTest::qWait( 200 );
+    QTest::qWait( 200 );
     QTest::mouseRelease(button1,Qt::LeftButton);
-    //QTest::qWait( 200 );
+    QTest::qWait( 200 );
 }
 
 void TestTest::clickString( const char *s )
@@ -238,9 +182,6 @@ void TestTest::clickString( const char *s )
         case '8':
         case '9':
             clickButton( QString("button%1").arg(*p) );
-            break;
-        case '.':
-            clickButton( QString("buttonDot") );
             break;
         case 'S':
             clickButton( QString("buttonSign") );

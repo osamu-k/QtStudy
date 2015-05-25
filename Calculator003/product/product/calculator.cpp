@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -12,75 +13,96 @@ using namespace std;
 Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
     , m_stateNum1Waiting(this)
-    , m_stateNum1IntegerPart(this)
+    , m_stateNum1Entered(this)
     , m_stateNum2Waiting(this)
-    , m_stateNum2IntegerPart(this)
+    , m_stateNum2Entered(this)
     , m_stateShowResult(this)
     , m_state(STATE_NUM1_WAITING)
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout;
 
-    QLineEdit *lineDisplay = createLineEdit("lineDisplay");
+    lineDisplay = createLineEdit("lineDisplay");
     vboxLayout->addWidget(lineDisplay);
 
-    QLineEdit *lineInput = createLineEdit("lineInput");
+    lineInput = createLineEdit("lineInput");
     vboxLayout->addWidget(lineInput);
 
-    QPushButton *button0 = createNumberButton( 0 );
-    QPushButton *button1 = createNumberButton( 1 );
-    QPushButton *button2 = createNumberButton( 2 );
-    QPushButton *button3 = createNumberButton( 3 );
-    QPushButton *button4 = createNumberButton( 4 );
-    QPushButton *button5 = createNumberButton( 5 );
-    QPushButton *button6 = createNumberButton( 6 );
-    QPushButton *button7 = createNumberButton( 7 );
-    QPushButton *button8 = createNumberButton( 8 );
-    QPushButton *button9 = createNumberButton( 9 );
+    button0 = createNumberButton( 0 );
+    button1 = createNumberButton( 1 );
+    button2 = createNumberButton( 2 );
+    button3 = createNumberButton( 3 );
+    button4 = createNumberButton( 4 );
+    button5 = createNumberButton( 5 );
+    button6 = createNumberButton( 6 );
+    button7 = createNumberButton( 7 );
+    button8 = createNumberButton( 8 );
+    button9 = createNumberButton( 9 );
 
-    QPushButton *buttonSign = createSignButton();
+    buttonSign = createSignButton();
 
-    QPushButton *buttonAdd = createAddButton();
-    QPushButton *buttonSub = createSubButton();
-    QPushButton *buttonMul = createMulButton();
-    QPushButton *buttonDiv = createDivButton();
+    buttonAdd = createAddButton();
+    buttonSub = createSubButton();
+    buttonMul = createMulButton();
+    buttonDiv = createDivButton();
 
-    QPushButton *buttonEq = createEqualButton();
+    buttonEq = createEqualButton();
 
-    QPushButton *buttonAC = createAllClearButton();
-    QPushButton *buttonC = createClearButton();
+    buttonAC = createAllClearButton();
+    buttonC = createClearButton();
+
+    QHBoxLayout *hboxLayout1 = new QHBoxLayout;
+    hboxLayout1->setMargin(0);
+
+    hboxLayout1->addWidget(buttonAC);
+    hboxLayout1->addWidget(buttonC );
+    hboxLayout1->addWidget(buttonSign);
 
     QGridLayout *gridLayout = new QGridLayout;
+    gridLayout->setMargin(0);
 
-    gridLayout->addWidget(buttonAC  ,0,0);
-    gridLayout->addWidget(buttonC   ,0,1);
-    gridLayout->addWidget(buttonSign,0,2);
-    gridLayout->addWidget(buttonDiv ,0,3);
+    gridLayout->addWidget(button7   ,0,0);
+    gridLayout->addWidget(button8   ,0,1);
+    gridLayout->addWidget(button9   ,0,2);
 
-    gridLayout->addWidget(button7   ,1,0);
-    gridLayout->addWidget(button8   ,1,1);
-    gridLayout->addWidget(button9   ,1,2);
-    gridLayout->addWidget(buttonMul ,1,3);
+    gridLayout->addWidget(button4   ,1,0);
+    gridLayout->addWidget(button5   ,1,1);
+    gridLayout->addWidget(button6   ,1,2);
 
-    gridLayout->addWidget(button4   ,2,0);
-    gridLayout->addWidget(button5   ,2,1);
-    gridLayout->addWidget(button6   ,2,2);
-    gridLayout->addWidget(buttonSub ,2,3);
+    gridLayout->addWidget(button1   ,2,0);
+    gridLayout->addWidget(button2   ,2,1);
+    gridLayout->addWidget(button3   ,2,2);
 
-    gridLayout->addWidget(button1   ,3,0);
-    gridLayout->addWidget(button2   ,3,1);
-    gridLayout->addWidget(button3   ,3,2);
-    gridLayout->addWidget(buttonAdd ,3,3);
+    gridLayout->addWidget(button0   ,3,0,1,3);
 
-    gridLayout->addWidget(button0   ,4,0,1,3);
-    gridLayout->addWidget(buttonEq  ,4,3);
+    QVBoxLayout *vboxLayout1 = new QVBoxLayout;
+    vboxLayout1->addLayout( hboxLayout1 );
+    vboxLayout1->addLayout( gridLayout );
 
-    vboxLayout->addLayout(gridLayout);
-    setLayout(vboxLayout);
+    QVBoxLayout *vboxLayout2 = new QVBoxLayout;
+    vboxLayout2->setMargin(0);
+    vboxLayout2->addWidget(buttonDiv);
+    vboxLayout2->addWidget(buttonMul);
+    vboxLayout2->addWidget(buttonSub);
+    vboxLayout2->addWidget(buttonAdd);
+    vboxLayout2->addWidget(buttonEq );
+
+    QHBoxLayout *hboxLayout2 = new QHBoxLayout;
+    hboxLayout2->addLayout( vboxLayout1 );
+    hboxLayout2->addLayout( vboxLayout2 );
+    hboxLayout2->setStretchFactor( vboxLayout1, 3 );
+    hboxLayout2->setStretchFactor( vboxLayout2, 1 );
+
+    QVBoxLayout *vboxLayout3 = new QVBoxLayout;
+    vboxLayout3->addWidget(lineDisplay);
+    vboxLayout3->addWidget(lineInput);
+    vboxLayout3->addLayout( hboxLayout2 );
+
+    setLayout( vboxLayout3 );
 
     m_stateMap[STATE_NUM1_WAITING     ] = &m_stateNum1Waiting;
-    m_stateMap[STATE_NUM1_INTEGER_PART] = &m_stateNum1IntegerPart;
+    m_stateMap[STATE_NUM1_ENTERED] = &m_stateNum1Entered;
     m_stateMap[STATE_NUM2_WAITING     ] = &m_stateNum2Waiting;
-    m_stateMap[STATE_NUM2_INTEGER_PART] = &m_stateNum2IntegerPart;
+    m_stateMap[STATE_NUM2_ENTERED] = &m_stateNum2Entered;
     m_stateMap[STATE_SHOW_RESULT      ] = &m_stateShowResult;
 
     m_state = STATE_NUM1_WAITING;
@@ -133,35 +155,36 @@ QPushButton *Calculator::createSignButton()
 
 QPushButton *Calculator::createAddButton()
 {
-    return createOperatorButton( "+", "buttonAdd", [](double x, double y)->double{ return x + y; });
+    return createOperatorButton( "+", "buttonAdd", [](long x, long y)->long{ return x + y; });
 }
 
 QPushButton *Calculator::createSubButton()
 {
-    return createOperatorButton( "-", "buttonSub", [](double x, double y)->double{ return x - y; });
+    return createOperatorButton( "-", "buttonSub", [](long x, long y)->long{ return x - y; });
 }
 
 QPushButton *Calculator::createMulButton()
 {
-    return createOperatorButton( "×", "buttonMul", [](double x, double y)->double{ return x * y; });
+    return createOperatorButton( "×", "buttonMul", [](long x, long y)->long{ return x * y; });
 }
 
 QPushButton *Calculator::createDivButton()
 {
-    return createOperatorButton( "÷", "buttonDiv", [](double x, double y)->double{ return x / y; });
+    return createOperatorButton( "÷", "buttonDiv", [](long x, long y)->long{ return x / y; });
 }
 
-QPushButton *Calculator::createOperatorButton( QString label, QString objectName, double (*func)(double, double) )
+QPushButton *Calculator::createOperatorButton( QString label, QString objectName, long (*func)(long, long) )
 {
     QPushButton *button = new QPushButton(label);
     button->setObjectName(objectName);
     connect( button, &QPushButton::clicked, [=](){operatorButtonClicked(label,func);} );
     return button;
 }
+
 QPushButton *Calculator::createEqualButton()
 {
     QString label("=");
-    QString objectName( "buttonEqual" );
+    QString objectName( "buttonEq" );
     QPushButton *button = new QPushButton(label);
     button->setObjectName(objectName);
     connect( button, &QPushButton::clicked, this, &Calculator::equalButtonClicked );
@@ -186,62 +209,6 @@ QPushButton *Calculator::createClearButton()
     button->setObjectName(objectName);
     connect( button, &QPushButton::clicked, this, &Calculator::clearButtonClicked );
     return button;
-}
-
-QLineEdit *Calculator::getLineDisplay()
-{
-    return findChild<QLineEdit *>( "lineDisplay" );
-}
-
-QLineEdit *Calculator::getLineInput()
-{
-    return findChild<QLineEdit *>( "lineInput" );
-}
-
-QPushButton *Calculator::getNumberButton( int i )
-{
-    QString objectName = QString("button%1").arg(i);
-    return findChild<QPushButton *>( objectName );
-}
-
-QPushButton *Calculator::getSignButton()
-{
-    return findChild<QPushButton *>( "buttonSign" );
-}
-
-QPushButton *Calculator::getAddButton()
-{
-    return findChild<QPushButton *>( "buttonAdd" );
-}
-
-QPushButton *Calculator::getSubButton()
-{
-    return findChild<QPushButton *>( "buttonSub" );
-}
-
-QPushButton *Calculator::getMulButton()
-{
-    return findChild<QPushButton *>( "buttonMul" );
-}
-
-QPushButton *Calculator::getDivButton()
-{
-    return findChild<QPushButton *>( "buttonDiv" );
-}
-
-QPushButton *Calculator::getEqualButton()
-{
-    return findChild<QPushButton *>( "buttonEqual" );
-}
-
-QPushButton *Calculator::getAllClearButton()
-{
-    return findChild<QPushButton *>( "buttonAllClear" );
-}
-
-QPushButton *Calculator::getClearButton()
-{
-    return findChild<QPushButton *>( "buttonClear" );
 }
 
 void Calculator::disableIrrelevantButtons()
@@ -279,8 +246,8 @@ void Calculator::clearButtonClicked()
     m_stateMap[m_state]->clearButtonClicked();
 }
 
-Calculator::State::State(Calculator *calculator, QString name)
-    : m_calculator(calculator),m_name(name)
+Calculator::State::State(Calculator *calculator)
+    : m_calculator(calculator)
 {
 }
 
@@ -290,11 +257,11 @@ Calculator::State::~State()
 
 void Calculator::State::disableIrrelevantButtons()
 {
-    m_calculator->getAddButton()  ->setDisabled(false);
-    m_calculator->getSubButton()  ->setDisabled(false);
-    m_calculator->getMulButton()  ->setDisabled(false);
-    m_calculator->getDivButton()  ->setDisabled(false);
-    m_calculator->getEqualButton()->setDisabled(false);
+    m_calculator->buttonAdd  ->setDisabled(false);
+    m_calculator->buttonSub  ->setDisabled(false);
+    m_calculator->buttonMul  ->setDisabled(false);
+    m_calculator->buttonDiv  ->setDisabled(false);
+    m_calculator->buttonEq   ->setDisabled(false);
 }
 
 void Calculator::State::numberButtonClicked(QString digit)
@@ -324,6 +291,13 @@ void Calculator::State::operatorButtonClicked(QString label, func_ptr func)
 
 void Calculator::State::equalButtonClicked()
 {
+    double answer = m_calculator->m_operation(
+                        m_calculator->m_currentData.toDouble(),
+                        getLineInput()->text().toDouble() );
+    getLineDisplay()->setText( QString::number(answer) );
+    getLineInput()->clear();
+    m_calculator->m_operation = 0;
+    setState( STATE_SHOW_RESULT );
 }
 
 void Calculator::State::allClearButtonClicked()
@@ -345,250 +319,135 @@ void Calculator::State::setState( enum state state )
     m_calculator->disableIrrelevantButtons();
 }
 
-Calculator::StateNum1Waiting::StateNum1Waiting(Calculator *calculator)
-    : State(calculator,"NUM1_INTEGER_WAITING")
-{
-}
+// State: NUM1_WAITING
 
-Calculator::StateNum1Waiting::~StateNum1Waiting()
+Calculator::StateNum1Waiting::StateNum1Waiting(Calculator *calculator)
+    : State(calculator)
 {
 }
 
 void Calculator::StateNum1Waiting::disableIrrelevantButtons()
 {
     State::disableIrrelevantButtons();
-    m_calculator->getAddButton()  ->setDisabled(true);
-    m_calculator->getSubButton()  ->setDisabled(true);
-    m_calculator->getMulButton()  ->setDisabled(true);
-    m_calculator->getDivButton()  ->setDisabled(true);
-    m_calculator->getEqualButton()->setDisabled(true);
+    m_calculator->buttonAdd  ->setDisabled(true);
+    m_calculator->buttonSub  ->setDisabled(true);
+    m_calculator->buttonMul  ->setDisabled(true);
+    m_calculator->buttonDiv  ->setDisabled(true);
+    m_calculator->buttonEq   ->setDisabled(true);
 }
 
 void Calculator::StateNum1Waiting::numberButtonClicked(QString digit)
 {
     State::numberButtonClicked(digit);
-    setState( STATE_NUM1_INTEGER_PART );
+    setState( STATE_NUM1_ENTERED );
 }
 
-void Calculator::StateNum1Waiting::signButtonClicked()
-{
-    State::signButtonClicked();
-}
+// State: NUM1_ENTERED
 
-void Calculator::StateNum1Waiting::operatorButtonClicked(QString label, func_ptr func)
-{
-    // Nothing to do.
-}
-
-void Calculator::StateNum1Waiting::equalButtonClicked()
-{
-    // Nothing to do.
-}
-
-void Calculator::StateNum1Waiting::allClearButtonClicked()
-{
-    State::allClearButtonClicked();
-}
-
-void Calculator::StateNum1Waiting::clearButtonClicked()
-{
-    // Nothing to do.
-}
-
-Calculator::StateNum1IntegerPart::StateNum1IntegerPart(Calculator *calculator)
-    : State(calculator,"NUM1_INTEGER_PART")
+Calculator::StateNum1Entered::StateNum1Entered(Calculator *calculator)
+    : State(calculator)
 {
 }
 
-Calculator::StateNum1IntegerPart::~StateNum1IntegerPart()
-{
-}
-
-void Calculator::StateNum1IntegerPart::disableIrrelevantButtons()
+void Calculator::StateNum1Entered::disableIrrelevantButtons()
 {
     State::disableIrrelevantButtons();
-    m_calculator->getEqualButton()->setDisabled(true);
+    m_calculator->buttonEq->setDisabled(true);
 }
 
-void Calculator::StateNum1IntegerPart::numberButtonClicked(QString digit)
+void Calculator::StateNum1Entered::numberButtonClicked(QString digit)
 {
     State::numberButtonClicked(digit);
 }
 
-void Calculator::StateNum1IntegerPart::signButtonClicked()
-{
-    State::signButtonClicked();
-}
-
-void Calculator::StateNum1IntegerPart::operatorButtonClicked(QString label, func_ptr func)
+void Calculator::StateNum1Entered::operatorButtonClicked(QString label, func_ptr func)
 {
     m_calculator->m_currentData = getLineInput()->text();
     State::operatorButtonClicked(label,func);
 }
 
-void Calculator::StateNum1IntegerPart::equalButtonClicked()
-{
-    // Nothing to do.
-}
-
-void Calculator::StateNum1IntegerPart::allClearButtonClicked()
-{
-    State::allClearButtonClicked();
-}
-
-void Calculator::StateNum1IntegerPart::clearButtonClicked()
+void Calculator::StateNum1Entered::clearButtonClicked()
 {
     getLineInput()->clear();
     setState( STATE_NUM1_WAITING );
 }
 
-Calculator::StateNum2Waiting::StateNum2Waiting(Calculator *calculator)
-    : State(calculator,"NUM2_WAITING")
-{
-}
+// State: NUM2_WAITING
 
-Calculator::StateNum2Waiting::~StateNum2Waiting()
+Calculator::StateNum2Waiting::StateNum2Waiting(Calculator *calculator)
+    : State(calculator)
 {
 }
 
 void Calculator::StateNum2Waiting::disableIrrelevantButtons()
 {
     State::disableIrrelevantButtons();
-    m_calculator->getAddButton()  ->setDisabled(true);
-    m_calculator->getSubButton()  ->setDisabled(true);
-    m_calculator->getMulButton()  ->setDisabled(true);
-    m_calculator->getDivButton()  ->setDisabled(true);
-    m_calculator->getEqualButton()->setDisabled(true);
+    m_calculator->buttonAdd  ->setDisabled(true);
+    m_calculator->buttonSub  ->setDisabled(true);
+    m_calculator->buttonMul  ->setDisabled(true);
+    m_calculator->buttonDiv  ->setDisabled(true);
+    m_calculator->buttonEq   ->setDisabled(true);
 }
 
 void Calculator::StateNum2Waiting::numberButtonClicked(QString digit)
 {
     State::numberButtonClicked(digit);
-    setState( STATE_NUM2_INTEGER_PART );
+    setState( STATE_NUM2_ENTERED );
 }
 
-void Calculator::StateNum2Waiting::signButtonClicked()
-{
-    State::signButtonClicked();
-}
+// State: NUM2_ENTERED
 
-void Calculator::StateNum2Waiting::operatorButtonClicked(QString label, func_ptr func)
-{
-    // Nothing to do.
-}
-
-void Calculator::StateNum2Waiting::equalButtonClicked()
-{
-    // Nothing to do.
-}
-
-void Calculator::StateNum2Waiting::allClearButtonClicked()
-{
-    State::allClearButtonClicked();
-}
-
-void Calculator::StateNum2Waiting::clearButtonClicked()
-{
-    // Nothing to do.
-}
-
-Calculator::StateNum2IntegerPart::StateNum2IntegerPart(Calculator *calculator)
-    : State(calculator,"NUM2_INTEGER_PART")
+Calculator::StateNum2Entered::StateNum2Entered(Calculator *calculator)
+    : State(calculator)
 {
 }
 
-Calculator::StateNum2IntegerPart::~StateNum2IntegerPart()
-{
-}
-
-void Calculator::StateNum2IntegerPart::disableIrrelevantButtons()
+void Calculator::StateNum2Entered::disableIrrelevantButtons()
 {
     State::disableIrrelevantButtons();
 }
 
-void Calculator::StateNum2IntegerPart::numberButtonClicked(QString digit)
+void Calculator::StateNum2Entered::numberButtonClicked(QString digit)
 {
     State::numberButtonClicked(digit);
 }
 
-void Calculator::StateNum2IntegerPart::signButtonClicked()
+void Calculator::StateNum2Entered::operatorButtonClicked(QString label, func_ptr func)
 {
-    State::signButtonClicked();
-}
-
-void Calculator::StateNum2IntegerPart::operatorButtonClicked(QString label, func_ptr func)
-{
-    double answer = m_calculator->m_operation(
-                        m_calculator->m_currentData.toDouble(),
-                        getLineInput()->text().toDouble() );
+    long answer = m_calculator->m_operation(
+                        m_calculator->m_currentData.toLong(),
+                        getLineInput()->text().toLong() );
     m_calculator->m_currentData = QString::number(answer);
     State::operatorButtonClicked(label,func);
 }
 
-void Calculator::StateNum2IntegerPart::equalButtonClicked()
-{
-    double answer = m_calculator->m_operation(
-                        m_calculator->m_currentData.toDouble(),
-                        getLineInput()->text().toDouble() );
-    getLineDisplay()->setText( QString::number(answer) );
-    getLineInput()->clear();
-    m_calculator->m_operation = 0;
-    setState( STATE_SHOW_RESULT );
-}
-
-void Calculator::StateNum2IntegerPart::allClearButtonClicked()
-{
-    State::allClearButtonClicked();
-}
-
-void Calculator::StateNum2IntegerPart::clearButtonClicked()
+void Calculator::StateNum2Entered::clearButtonClicked()
 {
     getLineInput()->clear();
     setState( STATE_NUM2_WAITING );
 }
 
-Calculator::StateShowResult::StateShowResult(Calculator *calculator)
-    : State(calculator,"SHOW_RESULT")
-{
-}
+// State: SHOW_RESULT
 
-Calculator::StateShowResult::~StateShowResult()
+Calculator::StateShowResult::StateShowResult(Calculator *calculator)
+    : State(calculator)
 {
 }
 
 void Calculator::StateShowResult::disableIrrelevantButtons()
 {
     State::disableIrrelevantButtons();
-    m_calculator->getEqualButton()->setDisabled(true);
+    m_calculator->buttonEq->setDisabled(true);
 }
 
 void Calculator::StateShowResult::numberButtonClicked(QString digit)
 {
     State::numberButtonClicked(digit);
-    setState( STATE_NUM1_INTEGER_PART );
-}
-
-void Calculator::StateShowResult::signButtonClicked()
-{
-    State::signButtonClicked();
+    setState( STATE_NUM1_ENTERED );
 }
 
 void Calculator::StateShowResult::operatorButtonClicked(QString label, func_ptr func)
 {
     m_calculator->m_currentData = getLineDisplay()->text();
     State::operatorButtonClicked(label,func);
-}
-
-void Calculator::StateShowResult::equalButtonClicked()
-{
-    // Nothing to do.
-}
-
-void Calculator::StateShowResult::allClearButtonClicked()
-{
-    State::allClearButtonClicked();
-}
-
-void Calculator::StateShowResult::clearButtonClicked()
-{
 }

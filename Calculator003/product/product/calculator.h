@@ -24,7 +24,7 @@ signals:
 public slots:
 
 private:
-    typedef double(*func_ptr)(double, double);
+    typedef long(*func_ptr)(long, long);
 
 private slots:
     void numberButtonClicked(QString digit);
@@ -50,26 +50,39 @@ private:
     QPushButton *createAllClearButton();
     QPushButton *createClearButton();
 
-    QLineEdit *getLineDisplay();
-    QLineEdit *getLineInput();
+    QLineEdit *lineDisplay;
+    QLineEdit *lineInput;
 
-    QPushButton *getNumberButton( int i );
-    QPushButton *getSignButton();
-    QPushButton *getAddButton();
-    QPushButton *getSubButton();
-    QPushButton *getMulButton();
-    QPushButton *getDivButton();
-    QPushButton *getEqualButton();
-    QPushButton *getAllClearButton();
-    QPushButton *getClearButton();
+    QPushButton *button0;
+    QPushButton *button1;
+    QPushButton *button2;
+    QPushButton *button3;
+    QPushButton *button4;
+    QPushButton *button5;
+    QPushButton *button6;
+    QPushButton *button7;
+    QPushButton *button8;
+    QPushButton *button9;
+
+    QPushButton *buttonSign;
+
+    QPushButton *buttonAdd;
+    QPushButton *buttonSub;
+    QPushButton *buttonMul;
+    QPushButton *buttonDiv;
+
+    QPushButton *buttonEq;
+
+    QPushButton *buttonAC;
+    QPushButton *buttonC;
 
     void disableIrrelevantButtons();
 
     enum state{
         STATE_NUM1_WAITING,
-        STATE_NUM1_INTEGER_PART,
+        STATE_NUM1_ENTERED,
         STATE_NUM2_WAITING,
-        STATE_NUM2_INTEGER_PART,
+        STATE_NUM2_ENTERED,
         STATE_SHOW_RESULT
     };
 
@@ -79,7 +92,7 @@ private:
     class State
     {
     public:
-        State(Calculator *calculator, QString name);
+        State(Calculator *calculator);
         virtual ~State();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
@@ -88,85 +101,58 @@ private:
         virtual void equalButtonClicked();
         virtual void allClearButtonClicked();
         virtual void clearButtonClicked();
-        QString name() { return m_name; }
-        QLineEdit *getLineDisplay() { return m_calculator->getLineDisplay(); }
-        QLineEdit *getLineInput() { return m_calculator->getLineInput(); }
+        QLineEdit *getLineDisplay() { return m_calculator->lineDisplay; }
+        QLineEdit *getLineInput() { return m_calculator->lineInput; }
     protected:
         void setState( enum state state );
         Calculator *m_calculator;
-        QString m_name;
     };
     class StateNum1Waiting : public State
     {
     public:
         StateNum1Waiting(Calculator *calculator);
-        virtual ~StateNum1Waiting();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-        virtual void signButtonClicked();
-        virtual void operatorButtonClicked(QString label, func_ptr func);
-        virtual void equalButtonClicked();
-        virtual void allClearButtonClicked();
-        virtual void clearButtonClicked();
     };
-    class StateNum1IntegerPart : public State
+    class StateNum1Entered : public State
     {
     public:
-        StateNum1IntegerPart(Calculator *calculator);
-        virtual ~StateNum1IntegerPart();
+        StateNum1Entered(Calculator *calculator);
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-        virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
-        virtual void equalButtonClicked();
-        virtual void allClearButtonClicked();
         virtual void clearButtonClicked();
     };
     class StateNum2Waiting : public State
     {
     public:
         StateNum2Waiting(Calculator *calculator);
-        virtual ~StateNum2Waiting();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-        virtual void signButtonClicked();
-        virtual void operatorButtonClicked(QString label, func_ptr func);
-        virtual void equalButtonClicked();
-        virtual void allClearButtonClicked();
-        virtual void clearButtonClicked();
     };
-    class StateNum2IntegerPart : public State
+    class StateNum2Entered : public State
     {
     public:
-        StateNum2IntegerPart(Calculator *calculator);
-        virtual ~StateNum2IntegerPart();
+        StateNum2Entered(Calculator *calculator);
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-        virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
-        virtual void equalButtonClicked();
-        virtual void allClearButtonClicked();
         virtual void clearButtonClicked();
     };
     class StateShowResult : public State
     {
     public:
         StateShowResult(Calculator *calculator);
-        virtual ~StateShowResult();
         virtual void disableIrrelevantButtons();
         virtual void numberButtonClicked(QString digit);
-        virtual void signButtonClicked();
         virtual void operatorButtonClicked(QString label, func_ptr func);
-        virtual void equalButtonClicked();
-        virtual void allClearButtonClicked();
-        virtual void clearButtonClicked();
     };
 
-    StateNum1Waiting     m_stateNum1Waiting;
-    StateNum1IntegerPart m_stateNum1IntegerPart;
-    StateNum2Waiting     m_stateNum2Waiting;
-    StateNum2IntegerPart m_stateNum2IntegerPart;
-    StateShowResult      m_stateShowResult;
+    StateNum1Waiting m_stateNum1Waiting;
+    StateNum1Entered m_stateNum1Entered;
+    StateNum2Waiting m_stateNum2Waiting;
+    StateNum2Entered m_stateNum2Entered;
+    StateShowResult  m_stateShowResult;
 
     QMap<enum state, State *> m_stateMap;
 
