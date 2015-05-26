@@ -19,13 +19,8 @@ Calculator::Calculator(QWidget *parent)
     , m_stateShowResult(this)
     , m_state(STATE_NUM1_WAITING)
 {
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-
     lineDisplay = createLineEdit("lineDisplay");
-    vboxLayout->addWidget(lineDisplay);
-
     lineInput = createLineEdit("lineInput");
-    vboxLayout->addWidget(lineInput);
 
     button0 = createNumberButton( 0 );
     button1 = createNumberButton( 1 );
@@ -38,17 +33,19 @@ Calculator::Calculator(QWidget *parent)
     button8 = createNumberButton( 8 );
     button9 = createNumberButton( 9 );
 
-    buttonSign = createSignButton();
+    buttonAdd = createOperatorButton( "+", "buttonAdd", [](long x, long y)->long{ return x + y; });
+    buttonSub = createOperatorButton( "-", "buttonSub", [](long x, long y)->long{ return x - y; });
+    buttonMul = createOperatorButton( "×", "buttonMul", [](long x, long y)->long{ return x * y; });
+    buttonDiv = createOperatorButton( "÷", "buttonDiv", [](long x, long y)->long{ return x / y; });
 
-    buttonAdd = createAddButton();
-    buttonSub = createSubButton();
-    buttonMul = createMulButton();
-    buttonDiv = createDivButton();
+    buttonSign = createButton("+/-","buttonSign"    ,SLOT(signButtonClicked())     );
+    buttonEq   = createButton("="  ,"buttonEqual"   ,SLOT(equalButtonClicked())    );
+    buttonAC   = createButton("AC" ,"buttonAllClear",SLOT(allClearButtonClicked()) );
+    buttonC    = createButton("C"  ,"buttonClear"   ,SLOT(clearButtonClicked())    );
 
-    buttonEq = createEqualButton();
-
-    buttonAC = createAllClearButton();
-    buttonC = createClearButton();
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(lineDisplay);
+    vboxLayout->addWidget(lineInput);
 
     QHBoxLayout *hboxLayout1 = new QHBoxLayout;
     hboxLayout1->setMargin(0);
@@ -99,11 +96,11 @@ Calculator::Calculator(QWidget *parent)
 
     setLayout( vboxLayout3 );
 
-    m_stateMap[STATE_NUM1_WAITING     ] = &m_stateNum1Waiting;
+    m_stateMap[STATE_NUM1_WAITING] = &m_stateNum1Waiting;
     m_stateMap[STATE_NUM1_ENTERED] = &m_stateNum1Entered;
-    m_stateMap[STATE_NUM2_WAITING     ] = &m_stateNum2Waiting;
+    m_stateMap[STATE_NUM2_WAITING] = &m_stateNum2Waiting;
     m_stateMap[STATE_NUM2_ENTERED] = &m_stateNum2Entered;
-    m_stateMap[STATE_SHOW_RESULT      ] = &m_stateShowResult;
+    m_stateMap[STATE_SHOW_RESULT ] = &m_stateShowResult;
 
     m_state = STATE_NUM1_WAITING;
     m_stateMap[ m_state ]->disableIrrelevantButtons();
@@ -113,15 +110,15 @@ Calculator::~Calculator()
 {
 }
 
-QLineEdit *Calculator::createLineDisplay()
-{
-    return createLineEdit("lineDisplay");
-}
+//QLineEdit *Calculator::createLineDisplay()
+//{
+//    return createLineEdit("lineDisplay");
+//}
 
-QLineEdit *Calculator::createLineInput()
-{
-    return createLineEdit("lineInput");
-}
+//QLineEdit *Calculator::createLineInput()
+//{
+//    return createLineEdit("lineInput");
+//}
 
 QLineEdit *Calculator::createLineEdit( QString objectName )
 {
@@ -132,82 +129,28 @@ QLineEdit *Calculator::createLineEdit( QString objectName )
     return lineEdit;
 }
 
+QPushButton *Calculator::createButton( QString label, QString objectName, const char* slot )
+{
+    QPushButton *button = new QPushButton(label);
+    button->setObjectName(objectName);
+    connect( button, SIGNAL(clicked()), this, slot );
+    return button;
+}
+
 QPushButton *Calculator::createNumberButton( int i )
 {
     QString label = QString::number(i);
     QString objectName = QString("button%1").arg(i);
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked,
-             [=](){ numberButtonClicked(label); } );
+    QPushButton *button = createButton( label, objectName, SLOT(numberButtonClicked()) );
+    m_numberButtonMap[button] = label;
     return button;
 }
 
-QPushButton *Calculator::createSignButton()
+QPushButton *Calculator::createOperatorButton( QString operatorString, QString objectName, func_ptr func )
 {
-    QString label("+/-");
-    QString objectName( "buttonSign" );
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked, this, &Calculator::signButtonClicked );
-    return button;
-}
-
-QPushButton *Calculator::createAddButton()
-{
-    return createOperatorButton( "+", "buttonAdd", [](long x, long y)->long{ return x + y; });
-}
-
-QPushButton *Calculator::createSubButton()
-{
-    return createOperatorButton( "-", "buttonSub", [](long x, long y)->long{ return x - y; });
-}
-
-QPushButton *Calculator::createMulButton()
-{
-    return createOperatorButton( "×", "buttonMul", [](long x, long y)->long{ return x * y; });
-}
-
-QPushButton *Calculator::createDivButton()
-{
-    return createOperatorButton( "÷", "buttonDiv", [](long x, long y)->long{ return x / y; });
-}
-
-QPushButton *Calculator::createOperatorButton( QString label, QString objectName, long (*func)(long, long) )
-{
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked, [=](){operatorButtonClicked(label,func);} );
-    return button;
-}
-
-QPushButton *Calculator::createEqualButton()
-{
-    QString label("=");
-    QString objectName( "buttonEq" );
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked, this, &Calculator::equalButtonClicked );
-    return button;
-}
-
-QPushButton *Calculator::createAllClearButton()
-{
-    QString label("AC");
-    QString objectName( "buttonAllClear" );
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked, this, &Calculator::allClearButtonClicked );
-    return button;
-}
-
-QPushButton *Calculator::createClearButton()
-{
-    QString label("C");
-    QString objectName( "buttonClear" );
-    QPushButton *button = new QPushButton(label);
-    button->setObjectName(objectName);
-    connect( button, &QPushButton::clicked, this, &Calculator::clearButtonClicked );
+    QPushButton *button = createButton( operatorString, objectName, SLOT(operatorButtonClicked()) );
+    m_operatorButtonMap[button] = operatorString;
+    m_buttonFunctionMap[button] = func;
     return button;
 }
 
@@ -216,19 +159,24 @@ void Calculator::disableIrrelevantButtons()
     m_stateMap[m_state]->disableIrrelevantButtons();
 }
 
-void Calculator::numberButtonClicked( QString digit )
+void Calculator::numberButtonClicked()
 {
+    QPushButton *button = qobject_cast<QPushButton*>( sender() );
+    QString digit = m_numberButtonMap[button];
     m_stateMap[m_state]->numberButtonClicked(digit);
+}
+
+void Calculator::operatorButtonClicked()
+{
+    QPushButton *button = qobject_cast<QPushButton*>( sender() );
+    QString operatorString = m_operatorButtonMap[button];
+    func_ptr func = m_buttonFunctionMap[button];
+    m_stateMap[m_state]->operatorButtonClicked(operatorString,func);
 }
 
 void Calculator::signButtonClicked()
 {
     m_stateMap[m_state]->signButtonClicked();
-}
-
-void Calculator::operatorButtonClicked(QString label, func_ptr func)
-{
-    m_stateMap[m_state]->operatorButtonClicked(label,func);
 }
 
 void Calculator::equalButtonClicked()

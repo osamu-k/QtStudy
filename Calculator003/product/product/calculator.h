@@ -27,28 +27,21 @@ private:
     typedef long(*func_ptr)(long, long);
 
 private slots:
-    void numberButtonClicked(QString digit);
+    void numberButtonClicked();
+    void operatorButtonClicked();
     void signButtonClicked();
-    void operatorButtonClicked(QString label, func_ptr func);
     void equalButtonClicked();
     void allClearButtonClicked();
     void clearButtonClicked();
 
 private:
-    QLineEdit *createLineDisplay();
-    QLineEdit *createLineInput();
     QLineEdit *createLineEdit(QString objectName);
 
+    QPushButton *createButton( QString label, QString objectName, const char* slot );
     QPushButton *createNumberButton( int i );
-    QPushButton *createSignButton();
-    QPushButton *createAddButton();
-    QPushButton *createSubButton();
-    QPushButton *createMulButton();
-    QPushButton *createDivButton();
-    QPushButton *createOperatorButton( QString label, QString objectName, func_ptr func );
-    QPushButton *createEqualButton();
-    QPushButton *createAllClearButton();
-    QPushButton *createClearButton();
+    QPushButton *createOperatorButton( QString operatorString, QString objectName, func_ptr func );
+
+    void disableIrrelevantButtons();
 
     QLineEdit *lineDisplay;
     QLineEdit *lineInput;
@@ -64,8 +57,6 @@ private:
     QPushButton *button8;
     QPushButton *button9;
 
-    QPushButton *buttonSign;
-
     QPushButton *buttonAdd;
     QPushButton *buttonSub;
     QPushButton *buttonMul;
@@ -75,8 +66,14 @@ private:
 
     QPushButton *buttonAC;
     QPushButton *buttonC;
+    QPushButton *buttonSign;
 
-    void disableIrrelevantButtons();
+    QMap<QPushButton*,QString> m_numberButtonMap;
+    QMap<QPushButton*,QString> m_operatorButtonMap;
+    QMap<QPushButton*,func_ptr> m_buttonFunctionMap;
+
+    QString m_currentData;
+    func_ptr m_operation;
 
     enum state{
         STATE_NUM1_WAITING,
@@ -85,9 +82,6 @@ private:
         STATE_NUM2_ENTERED,
         STATE_SHOW_RESULT
     };
-
-    QString m_currentData;
-    func_ptr m_operation;
 
     class State
     {
