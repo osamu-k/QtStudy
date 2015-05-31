@@ -39,7 +39,7 @@ SyntaxNodeBinary::~SyntaxNodeBinary()
 int SyntaxNodeBinary::evaluate()
 {
     if( (operand1() == 0) || (operand2() == 0) )
-        throw new IncompleteSyntaxException;
+        throw IncompleteSyntaxException();
 
     int value1 = operand1()->evaluate();
     int value2 = operand2()->evaluate();
@@ -100,7 +100,7 @@ SyntaxNodeDiv::~SyntaxNodeDiv()
 int SyntaxNodeDiv::calculate(int x, int y)
 {
     if( y == 0 )
-        throw new DividedByZeroException;
+        throw DividedByZeroException();
     return x / y;
 }
 
@@ -118,7 +118,7 @@ SyntaxNodeUnary::~SyntaxNodeUnary()
 int SyntaxNodeUnary::evaluate()
 {
     if( operand() == 0 )
-        throw new IncompleteSyntaxException;
+        throw IncompleteSyntaxException();
 
     int value = operand()->evaluate();
     return calculate(value);
@@ -152,31 +152,41 @@ int SyntaxNodeMinus::calculate(int x)
     return - x;
 }
 
-SyntaxNodeVarDecl::SyntaxNodeVarDecl( string name )
-    :SyntaxNode(SyntaxNode::TYPE_VAR_DECL), m_name(name)
-{
-}
+//SyntaxNodeVarDecl::SyntaxNodeVarDecl( string name )
+//    :SyntaxNode(SyntaxNode::TYPE_VAR_DECL), m_name(name)
+//{
+//}
 
-SyntaxNodeVarDecl::~SyntaxNodeVarDecl()
-{
-}
+//SyntaxNodeVarDecl::~SyntaxNodeVarDecl()
+//{
+//}
 
-SyntaxNodeVarRef::SyntaxNodeVarRef( string name )
-    :SyntaxNode(SyntaxNode::TYPE_VAR_REF), m_name(name)
-{
-}
+//SyntaxNodeVarRef::SyntaxNodeVarRef( string name )
+//    :SyntaxNode(SyntaxNode::TYPE_VAR_REF), m_name(name)
+//{
+//}
 
-SyntaxNodeVarRef::~SyntaxNodeVarRef()
-{
-}
+//SyntaxNodeVarRef::~SyntaxNodeVarRef()
+//{
+//}
 
-SyntaxNodeAssign::SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value )
-    : SyntaxNode(SyntaxNode::TYPE_ASSIGN), m_var(var), m_value(value)
-{
-}
+//SyntaxNodeAssign::SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value )
+//    : SyntaxNode(SyntaxNode::TYPE_ASSIGN), m_var(var), m_value(value)
+//{
+//}
 
-SyntaxNodeAssign::~SyntaxNodeAssign()
-{
-    if( m_var ) delete m_var;
-    if( m_value ) delete m_value;
-}
+//SyntaxNodeAssign::~SyntaxNodeAssign()
+//{
+//    if( m_var ) delete m_var;
+//    if( m_value ) delete m_value;
+//}
+
+
+//int SyntaxNodeAssign::evaluate()
+//{
+//    if( operand() == 0 )
+//        throw new IncompleteSyntaxException;
+
+//    int value = operand()->evaluate();
+//    return calculate(value);
+//}

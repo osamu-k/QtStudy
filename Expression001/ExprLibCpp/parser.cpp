@@ -134,7 +134,6 @@ SyntaxNode *Parser::parseFactor()
         if( isError() )
             return node;
         if( node == 0 ){
-            fprintf(stderr,"%s:%d\n",__FUNCTION__,__LINE__);
             setError(PARSING_ERROR_NO_EXPRESSION_AFTER_PARENTHESIS, "No expression after '('.");
             return node;
         }

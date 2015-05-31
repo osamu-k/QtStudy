@@ -8,39 +8,23 @@
 #include <stack>
 using namespace std;
 
-class Evaluator : public NodeVisitor
+class Evaluator
 {
 public:
     enum EvaluationStatus{
         EVALUATION_OK,
         EVALUATION_ERROR_DIVIDED_BY_ZERO,
-        EVALUATION_ERROR_INCOMPLETE_SYNTAX,
-        EVALUATION_ERROR_UNDEFINED_VARIABLE
+        EVALUATION_ERROR_INCOMPLETE_SYNTAX
     };
 
     Evaluator();
     ~Evaluator();
     int evaluate( SyntaxNode *node );
-    void visit( SyntaxNodeNumber *node );
-    void visit( SyntaxNodeAdd *node );
-    void visit( SyntaxNodeSub *node );
-    void visit( SyntaxNodeMul *node );
-    void visit( SyntaxNodeDiv *node );
-    void visit( SyntaxNodePlus *node );
-    void visit( SyntaxNodeMinus *node );
-    void visit( SyntaxNodeVarDecl *node );
-    void visit( SyntaxNodeVarRef *node );
-    void visit( SyntaxNodeAssign *node );
     void setError( EvaluationStatus status, string message );
-    bool isError();
-    EvaluationStatus status();
-    string errorMessage();
+    bool isError() { return m_status != EVALUATION_OK; }
+    EvaluationStatus status() const { return m_status; }
+    string errorMessage() const { return m_errorMessage; }
 private:
-    void pushValue( int value );
-    int popValue();
-    stack<int> m_valueStack;
-    string m_varName;
-    map<string,int> m_varMap;
     EvaluationStatus m_status;
     string m_errorMessage;
 };

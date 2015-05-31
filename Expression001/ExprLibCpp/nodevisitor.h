@@ -15,11 +15,8 @@ class SyntaxNodeAssign;
 class NodeVisitor
 {
 public:
-    NodeVisitor()
-    {}
-
-    virtual ~NodeVisitor()
-    {}
+    NodeVisitor(){}
+    virtual ~NodeVisitor(){}
 
     virtual void visit( SyntaxNodeNumber * ) = 0;
     virtual void visit( SyntaxNodeVarDecl * ) = 0;

@@ -9,11 +9,6 @@ SyntaxNode::~SyntaxNode()
 {
 }
 
-SyntaxNode::Type SyntaxNode::type()
-{
-    return m_type;
-}
-
 SyntaxNodeNumber::SyntaxNodeNumber( int value )
     : SyntaxNode(SyntaxNode::TYPE_NUMBER),m_value(value)
 {
@@ -21,11 +16,6 @@ SyntaxNodeNumber::SyntaxNodeNumber( int value )
 
 SyntaxNodeNumber::~SyntaxNodeNumber()
 {
-}
-
-int SyntaxNodeNumber::value()
-{
-    return m_value;
 }
 
 void SyntaxNodeNumber::acceptVisitor( NodeVisitor *visitor )
@@ -44,16 +34,6 @@ SyntaxNodeBinary::~SyntaxNodeBinary()
         delete m_operand1;
     if( m_operand2 )
         delete m_operand2;
-}
-
-SyntaxNode *SyntaxNodeBinary::operand1()
-{
-    return m_operand1;
-}
-
-SyntaxNode *SyntaxNodeBinary::operand2()
-{
-    return m_operand2;
 }
 
 void SyntaxNodeBinary::acceptVisitor( NodeVisitor *visitor )
@@ -122,74 +102,6 @@ void SyntaxNodeDiv::acceptVisitor( NodeVisitor *visitor )
     visitor->visit( this );
 }
 
-SyntaxNodeVarDecl::SyntaxNodeVarDecl( string name )
-    :SyntaxNode(SyntaxNode::TYPE_VAR_DECL), m_name(name)
-{
-}
-
-SyntaxNodeVarDecl::~SyntaxNodeVarDecl()
-{
-}
-
-string SyntaxNodeVarDecl::name()
-{
-    return m_name;
-}
-
-void SyntaxNodeVarDecl::acceptVisitor( NodeVisitor *visitor )
-{
-    visitor->visit( this );
-}
-
-SyntaxNodeVarRef::SyntaxNodeVarRef( string name )
-    :SyntaxNode(SyntaxNode::TYPE_VAR_REF), m_name(name)
-{
-}
-
-SyntaxNodeVarRef::~SyntaxNodeVarRef()
-{
-}
-
-string SyntaxNodeVarRef::name()
-{
-    return m_name;
-}
-
-void SyntaxNodeVarRef::acceptVisitor( NodeVisitor *visitor )
-{
-    visitor->visit( this );
-}
-
-SyntaxNodeAssign::SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value )
-    : SyntaxNode(SyntaxNode::TYPE_ASSIGN), m_var(var), m_value(value)
-{
-}
-
-SyntaxNodeAssign::~SyntaxNodeAssign()
-{
-    if( m_var ) delete m_var;
-    if( m_value ) delete m_value;
-}
-
-SyntaxNodeVarDecl *SyntaxNodeAssign::var()
-{
-    return m_var;
-}
-
-SyntaxNode *SyntaxNodeAssign::value()
-{
-    return m_value;
-}
-
-void SyntaxNodeAssign::acceptVisitor( NodeVisitor *visitor )
-{
-    if( var() )
-        var()->acceptVisitor(visitor);
-    if( value() )
-        value()->acceptVisitor(visitor);
-    visitor->visit( this );
-}
-
 SyntaxNodeUnary::SyntaxNodeUnary( SyntaxNode::Type type, SyntaxNode *operand )
     : SyntaxNode(type), m_operand(operand)
 {
@@ -199,9 +111,6 @@ SyntaxNodeUnary::~SyntaxNodeUnary()
 {
     if( m_operand ) delete m_operand;
 }
-
-SyntaxNode *SyntaxNodeUnary::operand()
-{ return m_operand; }
 
 void SyntaxNodeUnary::acceptVisitor( NodeVisitor *visitor )
 {
@@ -236,5 +145,53 @@ SyntaxNodeMinus::~SyntaxNodeMinus()
 void SyntaxNodeMinus::acceptVisitor( NodeVisitor *visitor )
 {
     SyntaxNodeUnary::acceptVisitor( visitor );
+    visitor->visit( this );
+}
+
+SyntaxNodeVarDecl::SyntaxNodeVarDecl( string name )
+    :SyntaxNode(SyntaxNode::TYPE_VAR_DECL), m_name(name)
+{
+}
+
+SyntaxNodeVarDecl::~SyntaxNodeVarDecl()
+{
+}
+
+void SyntaxNodeVarDecl::acceptVisitor( NodeVisitor *visitor )
+{
+    visitor->visit( this );
+}
+
+SyntaxNodeVarRef::SyntaxNodeVarRef( string name )
+    :SyntaxNode(SyntaxNode::TYPE_VAR_REF), m_name(name)
+{
+}
+
+SyntaxNodeVarRef::~SyntaxNodeVarRef()
+{
+}
+
+void SyntaxNodeVarRef::acceptVisitor( NodeVisitor *visitor )
+{
+    visitor->visit( this );
+}
+
+SyntaxNodeAssign::SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value )
+    : SyntaxNode(SyntaxNode::TYPE_ASSIGN), m_var(var), m_value(value)
+{
+}
+
+SyntaxNodeAssign::~SyntaxNodeAssign()
+{
+    if( m_var ) delete m_var;
+    if( m_value ) delete m_value;
+}
+
+void SyntaxNodeAssign::acceptVisitor( NodeVisitor *visitor )
+{
+    if( var() )
+        var()->acceptVisitor(visitor);
+    if( value() )
+        value()->acceptVisitor(visitor);
     visitor->visit( this );
 }

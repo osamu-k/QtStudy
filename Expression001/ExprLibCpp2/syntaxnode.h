@@ -16,11 +16,11 @@ public:
         TYPE_SUB,
         TYPE_MUL,
         TYPE_DIV,
-        TYPE_VAR_DECL,
-        TYPE_VAR_REF,
-        TYPE_ASSIGN,
         TYPE_PLUS,
-        TYPE_MINUS
+        TYPE_MINUS,
+//        TYPE_VAR_DECL,
+//        TYPE_VAR_REF,
+//        TYPE_ASSIGN,
     };
 
     SyntaxNode( Type type = TYPE_UNDEFINED );
@@ -124,40 +124,40 @@ protected:
     int calculate(int x);
 };
 
-class SyntaxNodeVarDecl : public SyntaxNode
-{
-public:
-    SyntaxNodeVarDecl( string name );
-    ~SyntaxNodeVarDecl();
-    int evaluate();
-    string name() { return m_name; }
-private:
-    string m_name;
-};
+//class SyntaxNodeVarDecl : public SyntaxNode
+//{
+//public:
+//    SyntaxNodeVarDecl( string name );
+//    ~SyntaxNodeVarDecl();
+//    int evaluate();
+//    string name() { return m_name; }
+//private:
+//    string m_name;
+//};
 
-class SyntaxNodeVarRef : public SyntaxNode
-{
-public:
-    SyntaxNodeVarRef( string name );
-    ~SyntaxNodeVarRef();
-    int evaluate();
-    string name() { return m_name; }
-private:
-    string m_name;
-};
+//class SyntaxNodeVarRef : public SyntaxNode
+//{
+//public:
+//    SyntaxNodeVarRef( string name );
+//    ~SyntaxNodeVarRef();
+//    int evaluate();
+//    string name() { return m_name; }
+//private:
+//    string m_name;
+//};
 
-class SyntaxNodeAssign : public SyntaxNode
-{
-public:
-    SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value );
-    ~SyntaxNodeAssign();
-    int evaluate();
-    SyntaxNodeVarDecl *var() { return m_var; }
-    SyntaxNode *value() { return m_value; }
-private:
-    SyntaxNodeVarDecl *m_var;
-    SyntaxNode *m_value;
-};
+//class SyntaxNodeAssign : public SyntaxNode
+//{
+//public:
+//    SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value );
+//    ~SyntaxNodeAssign();
+//    int evaluate();
+//    SyntaxNodeVarDecl *var() { return m_var; }
+//    SyntaxNode *value() { return m_value; }
+//private:
+//    SyntaxNodeVarDecl *m_var;
+//    SyntaxNode *m_value;
+//};
 
 class DividedByZeroException
 {

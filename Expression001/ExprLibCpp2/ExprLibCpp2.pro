@@ -14,7 +14,6 @@ SOURCES += \
     evaluator.cpp \
     interpreter.cpp \
     parser.cpp \
-    token.cpp \
     tokenizer.cpp \
     syntaxnode.cpp
 

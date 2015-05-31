@@ -1,35 +1,31 @@
 #include "tokenizer.h"
 #include "ctype.h"
 
-map<char,Token::Type> Tokenizer::m_typeMap;
-map<string, Token::Type> Tokenizer::m_keywordMap;
+map<char,Token::Type> Tokenizer::m_singleCharMap;
+//map<string, Token::Type> Tokenizer::m_keywordMap;
 
 Tokenizer::Tokenizer()
 {
-    if( m_typeMap.size() == 0){
-        m_typeMap['+'] = Token::TYPE_OPERATOR_ADD;
-        m_typeMap['-'] = Token::TYPE_OPERATOR_SUB;
-        m_typeMap['*'] = Token::TYPE_OPERATOR_MUL;
-        m_typeMap['/'] = Token::TYPE_OPERATOR_DIV;
-        m_typeMap['='] = Token::TYPE_ASSIGNMENT;
-        m_typeMap['('] = Token::TYPE_PAREN_OPEN;
-        m_typeMap[')'] = Token::TYPE_PAREN_CLOSE;
-    }
-    if( m_keywordMap.size() == 0 ){
-        m_keywordMap["var"] = Token::TYPE_KEYWORD_VAR;
-    }
+    m_singleCharMap['+'] = Token::TYPE_OPERATOR_ADD;
+    m_singleCharMap['-'] = Token::TYPE_OPERATOR_SUB;
+    m_singleCharMap['*'] = Token::TYPE_OPERATOR_MUL;
+    m_singleCharMap['/'] = Token::TYPE_OPERATOR_DIV;
+    m_singleCharMap['('] = Token::TYPE_PAREN_OPEN;
+    m_singleCharMap[')'] = Token::TYPE_PAREN_CLOSE;
+//    m_singleCharMap['='] = Token::TYPE_ASSIGNMENT;
+
+//    m_keywordMap["var"] = Token::TYPE_KEYWORD_VAR;
 }
 
 Tokenizer::~Tokenizer()
 {
-
 }
 
 void Tokenizer::setSource( string source )
 {
     m_source = source;
     m_nextc = m_source.begin();
-    m_remaindString = m_source.begin();
+    m_remainedString = m_source.begin();
 }
 
 void Tokenizer::skipSpaces()
@@ -38,73 +34,69 @@ void Tokenizer::skipSpaces()
         m_nextc++;
 }
 
-Token *Tokenizer::next()
+Token Tokenizer::next()
 {
     skipSpaces();
+    m_remainedString = m_nextc;
 
-    Token *token = 0;
-    if( (token = makeTokenInteger()) != 0 ){
-        return token;
-    }
-    if( (token = makeTokenName()) != 0 ){
-        return token;
-    }
-    if( (token = makeOperatorToken()) != 0 ){
-        return token;
-    }
-    m_remaindString = m_nextc;
-    return new Token( "", Token::TYPE_END);
+    if( makeTokenNumber() )
+        ;
+    else if( makeTokenName() )
+        ;
+    else if( makeTokenSingleChar())
+        ;
+    else
+        m_currentToken = Token("", Token::TYPE_END);
+    return m_currentToken;
 }
 
-string Tokenizer::remainedString()
+string Tokenizer::remainedString() const
 {
     string::const_iterator end = m_source.end();
-    return string(m_remaindString,end);
+    return string(m_remainedString,end);
 }
 
-Token *Tokenizer::makeTokenInteger()
+bool Tokenizer::makeTokenNumber()
 {
+    bool ret = false;
     if( isnumber(*m_nextc) ){
-        m_remaindString = m_nextc;
-        int value = 0;
+        ret = true;
         string::const_iterator start = m_nextc;
-        while( isnumber(*m_nextc) ){
-            value *= 10;
-            value += *m_nextc - '0';
+        while( isnumber(*m_nextc) )
             m_nextc++;
-        }
-        return new TokenInteger(string( start, m_nextc ),value);
+        m_currentToken = Token(string( start, m_nextc ),Token::TYPE_NUMBER);
     }
-    return 0;
+    return ret;
 }
 
-Token *Tokenizer::makeTokenName()
+bool Tokenizer::makeTokenName()
 {
+    bool ret = false;
     if( isalpha(*m_nextc) ){
-        m_remaindString = m_nextc;
+        ret = true;
         string::const_iterator start = m_nextc;
-        while( isalnum(*m_nextc) ){
+        while( isalnum(*m_nextc) )
             m_nextc++;
-        }
         string name = string( start, m_nextc );
-        map<string, Token::Type>::const_iterator it = m_keywordMap.find(name);
-        if( it != m_keywordMap.end() ){
-            Token *token = new Token(string( start, m_nextc ),it->second);
-            return token;
-        }
-        return new TokenName( string( start, m_nextc ), name );
+
+//        map<string, Token::Type>::const_iterator it = m_keywordMap.find(name);
+//        if( it != m_keywordMap.end() )
+//            m_currentToken = Token(name,it->second);
+//        else
+//            m_currentToken = Token(name,Token::TYPE_NAME);
     }
-    return 0;
+    return ret;
 }
 
-Token *Tokenizer::makeOperatorToken()
+bool Tokenizer::makeTokenSingleChar()
 {
-    map<char,Token::Type>::const_iterator it = m_typeMap.find(*m_nextc);
-    if( it != m_typeMap.end() ){
-        m_remaindString = m_nextc;
+    bool ret = false;
+    map<char,Token::Type>::const_iterator it = m_singleCharMap.find(*m_nextc);
+    if( it != m_singleCharMap.end() ){
         string::const_iterator start = m_nextc;
         m_nextc++;
-        return new Token(string( start, m_nextc ),it->second);
+        m_currentToken = Token(string( start, m_nextc ),it->second);
+        ret = true;
     }
-    return 0;
+    return ret;
 }

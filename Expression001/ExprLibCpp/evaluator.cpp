@@ -32,96 +32,81 @@ void Evaluator::visit( SyntaxNodeNumber *node )
     m_valueStack.push( node->value() );
 }
 
-void Evaluator::visit( SyntaxNodeAdd *node )
+bool Evaluator::checkBinaryStatus( SyntaxNodeBinary *node )
 {
     if( m_status != EVALUATION_OK )
-        return;
+        return false;
+    if( (node->operand1() == 0) || (node->operand2() == 0) ){
+        setError(EVALUATION_ERROR_INCOMPLETE_SYNTAX, "Incomplete syntax !");
+        return false;
+    }
+    return true;
+}
 
-    int operand2 = 0;
-    if( node->operand2() ){
-        operand2 = popValue();
+void Evaluator::visit( SyntaxNodeAdd *node )
+{
+    if( checkBinaryStatus(node) ) {
+        int operand2 = popValue();
+        int operand1 = popValue();
+        m_valueStack.push( operand1 + operand2 );
     }
-    int operand1 = 0;
-    if( node->operand1() ){
-        operand1 = popValue();
-    }
-    m_valueStack.push( operand1 + operand2 );
 }
 
 void Evaluator::visit( SyntaxNodeSub *node )
 {
-    if( m_status != EVALUATION_OK )
-        return;
-
-    int operand2 = 0;
-    if( node->operand2() ){
-        operand2 = popValue();
+   if( checkBinaryStatus(node) ) {
+        int operand2 = popValue();
+        int operand1 = popValue();
+        m_valueStack.push( operand1 - operand2 );
     }
-    int operand1 = 0;
-    if( node->operand1() ){
-        operand1 = popValue();
-    }
-    m_valueStack.push( operand1 - operand2 );
 }
 
 void Evaluator::visit( SyntaxNodeMul *node )
 {
-    if( m_status != EVALUATION_OK )
-        return;
-
-    int operand2 = 1;
-    if( node->operand2() ){
-        operand2 = popValue();
-    }
-    int operand1 = 1;
-    if( node->operand1() ){
-        operand1 = popValue();
-    }
-    m_valueStack.push( operand1 * operand2 );
+    if( checkBinaryStatus(node) ) {
+         int operand2 = popValue();
+         int operand1 = popValue();
+         m_valueStack.push( operand1 * operand2 );
+     }
 }
 
 void Evaluator::visit( SyntaxNodeDiv *node )
 {
-    if( m_status != EVALUATION_OK )
-        return;
+    if( checkBinaryStatus(node) ) {
+         int operand2 = popValue();
+         if( operand2 == 0 ){
+             setError(EVALUATION_ERROR_DIVIDED_BY_ZERO, "Divided by zero.");
+             return;
+         }
+         int operand1 = popValue();
+         m_valueStack.push( operand1 / operand2 );
+     }
+}
 
-    int operand2 = 1;
-    if( node->operand2() ){
-        operand2 = popValue();
+bool Evaluator::checkUnaryStatus( SyntaxNodeUnary *node )
+{
+    if( m_status != EVALUATION_OK )
+        return false;
+    if( node->operand() == 0 ){
+        setError(EVALUATION_ERROR_INCOMPLETE_SYNTAX, "Incomplete syntax !");
+        return false;
     }
-    int operand1 = 1;
-    if( node->operand1() ){
-        operand1 = popValue();
-    }
-    if( operand2 == 0 ){
-        setError(EVALUATION_ERROR_DIVIDED_BY_ZERO, "Divided by zero.");
-        return;
-    }
-    m_valueStack.push( operand1 / operand2 );
+    return true;
 }
 
 void Evaluator::visit( SyntaxNodePlus *node )
 {
-    if( m_status != EVALUATION_OK )
-        return;
-
-    int operand = 0;
-    if( node->operand() ){
-        operand = popValue();
+    if( checkUnaryStatus(node) ){
+        // Nothing to do.
+        // m_valueStack.push( popValue() );
     }
-    m_valueStack.push( operand );
 }
 
 void Evaluator::visit( SyntaxNodeMinus *node )
 {
-    if( m_status != EVALUATION_OK )
-        return;
-
-    int operand = 0;
-    if( node->operand() ){
-        operand = popValue();
+    if( checkUnaryStatus(node) ){
+        m_valueStack.push( - popValue() );
     }
-    m_valueStack.push( - operand );
 }
 
 void Evaluator::visit( SyntaxNodeVarDecl *node )

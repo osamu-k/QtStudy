@@ -36,6 +36,8 @@ public:
     EvaluationStatus status();
     string errorMessage();
 private:
+    bool checkBinaryStatus( SyntaxNodeBinary *node );
+    bool checkUnaryStatus( SyntaxNodeUnary *node );
     void pushValue( int value );
     int popValue();
     stack<int> m_valueStack;

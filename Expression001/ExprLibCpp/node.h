@@ -22,11 +22,10 @@ public:
         TYPE_PLUS,
         TYPE_MINUS
     };
-
     SyntaxNode( Type type = TYPE_UNDEFINED );
     virtual ~SyntaxNode();
-    Type type();
     virtual void acceptVisitor( NodeVisitor *visitor ) = 0;
+    Type type() const { return m_type; }
 private:
     Type m_type;
 };
@@ -36,8 +35,8 @@ class SyntaxNodeNumber : public  SyntaxNode
 public:
     SyntaxNodeNumber( int value );
     ~SyntaxNodeNumber();
-    int value();
     void acceptVisitor( NodeVisitor *visitor );
+    int value() { return m_value; }
 private:
     int m_value;
 };
@@ -47,9 +46,9 @@ class SyntaxNodeBinary : public SyntaxNode
 public:
     SyntaxNodeBinary( Type type, SyntaxNode *operand1, SyntaxNode *operand2 );
     ~SyntaxNodeBinary();
-    SyntaxNode *operand1();
-    SyntaxNode *operand2();
     void acceptVisitor( NodeVisitor *visitor );
+    SyntaxNode *operand1() { return m_operand1; }
+    SyntaxNode *operand2() { return m_operand2; }
 private:
      SyntaxNode *m_operand1;
      SyntaxNode *m_operand2;
@@ -87,48 +86,13 @@ public:
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class SyntaxNodeVarDecl : public SyntaxNode
-{
-public:
-    SyntaxNodeVarDecl( string name );
-    ~SyntaxNodeVarDecl();
-    string name();
-    void acceptVisitor( NodeVisitor *visitor );
-private:
-    string m_name;
-};
-
-class SyntaxNodeVarRef : public SyntaxNode
-{
-public:
-    SyntaxNodeVarRef( string name );
-    ~SyntaxNodeVarRef();
-    string name();
-    void acceptVisitor( NodeVisitor *visitor );
-private:
-    string m_name;
-};
-
-class SyntaxNodeAssign : public SyntaxNode
-{
-public:
-    SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value );
-    ~SyntaxNodeAssign();
-    SyntaxNodeVarDecl *var();
-    SyntaxNode *value();
-    void acceptVisitor( NodeVisitor *visitor );
-private:
-    SyntaxNodeVarDecl *m_var;
-    SyntaxNode *m_value;
-};
-
 class SyntaxNodeUnary : public SyntaxNode
 {
 public:
     SyntaxNodeUnary( SyntaxNode::Type type, SyntaxNode *operand );
     ~SyntaxNodeUnary();
-    SyntaxNode *operand();
     void acceptVisitor( NodeVisitor *visitor );
+    SyntaxNode *operand() { return m_operand; }
 private:
     SyntaxNode *m_operand;
 };
@@ -147,6 +111,41 @@ public:
     SyntaxNodeMinus( SyntaxNode *operand );
     ~SyntaxNodeMinus();
     void acceptVisitor( NodeVisitor *visitor );
+};
+
+class SyntaxNodeVarDecl : public SyntaxNode
+{
+public:
+    SyntaxNodeVarDecl( string name );
+    ~SyntaxNodeVarDecl();
+    void acceptVisitor( NodeVisitor *visitor );
+    string name() { return m_name; }
+private:
+    string m_name;
+};
+
+class SyntaxNodeVarRef : public SyntaxNode
+{
+public:
+    SyntaxNodeVarRef( string name );
+    ~SyntaxNodeVarRef();
+    void acceptVisitor( NodeVisitor *visitor );
+    string name() { return m_name; }
+private:
+    string m_name;
+};
+
+class SyntaxNodeAssign : public SyntaxNode
+{
+public:
+    SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value );
+    ~SyntaxNodeAssign();
+    void acceptVisitor( NodeVisitor *visitor );
+    SyntaxNodeVarDecl *var() { return m_var; }
+    SyntaxNode *value() { return m_value; }
+private:
+    SyntaxNodeVarDecl *m_var;
+    SyntaxNode *m_value;
 };
 
 #endif // NODE_H
