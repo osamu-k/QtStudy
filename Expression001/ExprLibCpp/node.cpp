@@ -1,44 +1,44 @@
 #include "node.h"
 
-Node::Node( Type type )
+SyntaxNode::SyntaxNode( Type type )
     : m_type(type)
 {
 }
 
-Node::~Node()
+SyntaxNode::~SyntaxNode()
 {
 }
 
-Node::Type Node::type()
+SyntaxNode::Type SyntaxNode::type()
 {
     return m_type;
 }
 
-NodeInteger::NodeInteger( int value )
-    : Node(Node::TYPE_INTEGER),m_value(value)
+SyntaxNodeNumber::SyntaxNodeNumber( int value )
+    : SyntaxNode(SyntaxNode::TYPE_NUMBER),m_value(value)
 {
 }
 
-NodeInteger::~NodeInteger()
+SyntaxNodeNumber::~SyntaxNodeNumber()
 {
 }
 
-int NodeInteger::value()
+int SyntaxNodeNumber::value()
 {
     return m_value;
 }
 
-void NodeInteger::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeNumber::acceptVisitor( NodeVisitor *visitor )
 {
     visitor->visit( this );
 }
 
-NodeInfix::NodeInfix( Type type, Node *operand1, Node *operand2 )
-    :Node(type), m_operand1(operand1), m_operand2(operand2)
+SyntaxNodeBinary::SyntaxNodeBinary( Type type, SyntaxNode *operand1, SyntaxNode *operand2 )
+    :SyntaxNode(type), m_operand1(operand1), m_operand2(operand2)
 {
 }
 
-NodeInfix::~NodeInfix()
+SyntaxNodeBinary::~SyntaxNodeBinary()
 {
     if( m_operand1 )
         delete m_operand1;
@@ -46,17 +46,17 @@ NodeInfix::~NodeInfix()
         delete m_operand2;
 }
 
-Node *NodeInfix::operand1()
+SyntaxNode *SyntaxNodeBinary::operand1()
 {
     return m_operand1;
 }
 
-Node *NodeInfix::operand2()
+SyntaxNode *SyntaxNodeBinary::operand2()
 {
     return m_operand2;
 }
 
-void NodeInfix::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeBinary::acceptVisitor( NodeVisitor *visitor )
 {
     if( operand1() )
         operand1()->acceptVisitor(visitor);
@@ -64,124 +64,124 @@ void NodeInfix::acceptVisitor( NodeVisitor *visitor )
         operand2()->acceptVisitor(visitor);
 }
 
-NodeAdd::NodeAdd( Node *operand1, Node *operand2 )
-    : NodeInfix(Node::TYPE_ADD, operand1, operand2)
+SyntaxNodeAdd::SyntaxNodeAdd( SyntaxNode *operand1, SyntaxNode *operand2 )
+    : SyntaxNodeBinary(SyntaxNode::TYPE_ADD, operand1, operand2)
 {
 }
 
-NodeAdd::~NodeAdd()
+SyntaxNodeAdd::~SyntaxNodeAdd()
 {
 }
 
-void NodeAdd::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeAdd::acceptVisitor( NodeVisitor *visitor )
 {
-    NodeInfix::acceptVisitor( visitor );
+    SyntaxNodeBinary::acceptVisitor( visitor );
     visitor->visit( this );
 }
 
-NodeSub::NodeSub( Node *operand1, Node *operand2 )
-    : NodeInfix(Node::TYPE_SUB, operand1, operand2)
+SyntaxNodeSub::SyntaxNodeSub( SyntaxNode *operand1, SyntaxNode *operand2 )
+    : SyntaxNodeBinary(SyntaxNode::TYPE_SUB, operand1, operand2)
 {
 }
 
-NodeSub::~NodeSub()
+SyntaxNodeSub::~SyntaxNodeSub()
 {
 }
 
-void NodeSub::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeSub::acceptVisitor( NodeVisitor *visitor )
 {
-    NodeInfix::acceptVisitor( visitor );
+    SyntaxNodeBinary::acceptVisitor( visitor );
     visitor->visit( this );
 }
 
-NodeMul::NodeMul( Node *operand1, Node *operand2 )
-    : NodeInfix(Node::TYPE_MUL, operand1, operand2)
+SyntaxNodeMul::SyntaxNodeMul( SyntaxNode *operand1, SyntaxNode *operand2 )
+    : SyntaxNodeBinary(SyntaxNode::TYPE_MUL, operand1, operand2)
 {
 }
 
-NodeMul::~NodeMul()
+SyntaxNodeMul::~SyntaxNodeMul()
 {
 }
 
-void NodeMul::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeMul::acceptVisitor( NodeVisitor *visitor )
 {
-    NodeInfix::acceptVisitor( visitor );
+    SyntaxNodeBinary::acceptVisitor( visitor );
     visitor->visit( this );
 }
 
-NodeDiv::NodeDiv( Node *operand1, Node *operand2 )
-    : NodeInfix(Node::TYPE_DIV, operand1, operand2)
+SyntaxNodeDiv::SyntaxNodeDiv( SyntaxNode *operand1, SyntaxNode *operand2 )
+    : SyntaxNodeBinary(SyntaxNode::TYPE_DIV, operand1, operand2)
 {}
 
-NodeDiv::~NodeDiv()
+SyntaxNodeDiv::~SyntaxNodeDiv()
 {}
 
-void NodeDiv::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeDiv::acceptVisitor( NodeVisitor *visitor )
 {
-    NodeInfix::acceptVisitor( visitor );
+    SyntaxNodeBinary::acceptVisitor( visitor );
     visitor->visit( this );
 }
 
-NodeVarDecl::NodeVarDecl( string name )
-    :Node(Node::TYPE_VAR_DECL), m_name(name)
+SyntaxNodeVarDecl::SyntaxNodeVarDecl( string name )
+    :SyntaxNode(SyntaxNode::TYPE_VAR_DECL), m_name(name)
 {
 }
 
-NodeVarDecl::~NodeVarDecl()
+SyntaxNodeVarDecl::~SyntaxNodeVarDecl()
 {
 }
 
-string NodeVarDecl::name()
+string SyntaxNodeVarDecl::name()
 {
     return m_name;
 }
 
-void NodeVarDecl::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeVarDecl::acceptVisitor( NodeVisitor *visitor )
 {
     visitor->visit( this );
 }
 
-NodeVarRef::NodeVarRef( string name )
-    :Node(Node::TYPE_VAR_REF), m_name(name)
+SyntaxNodeVarRef::SyntaxNodeVarRef( string name )
+    :SyntaxNode(SyntaxNode::TYPE_VAR_REF), m_name(name)
 {
 }
 
-NodeVarRef::~NodeVarRef()
+SyntaxNodeVarRef::~SyntaxNodeVarRef()
 {
 }
 
-string NodeVarRef::name()
+string SyntaxNodeVarRef::name()
 {
     return m_name;
 }
 
-void NodeVarRef::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeVarRef::acceptVisitor( NodeVisitor *visitor )
 {
     visitor->visit( this );
 }
 
-NodeAssign::NodeAssign( NodeVarDecl *var, Node *value )
-    : Node(Node::TYPE_ASSIGN), m_var(var), m_value(value)
+SyntaxNodeAssign::SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value )
+    : SyntaxNode(SyntaxNode::TYPE_ASSIGN), m_var(var), m_value(value)
 {
 }
 
-NodeAssign::~NodeAssign()
+SyntaxNodeAssign::~SyntaxNodeAssign()
 {
     if( m_var ) delete m_var;
     if( m_value ) delete m_value;
 }
 
-NodeVarDecl *NodeAssign::var()
+SyntaxNodeVarDecl *SyntaxNodeAssign::var()
 {
     return m_var;
 }
 
-Node *NodeAssign::value()
+SyntaxNode *SyntaxNodeAssign::value()
 {
     return m_value;
 }
 
-void NodeAssign::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeAssign::acceptVisitor( NodeVisitor *visitor )
 {
     if( var() )
         var()->acceptVisitor(visitor);
@@ -190,51 +190,51 @@ void NodeAssign::acceptVisitor( NodeVisitor *visitor )
     visitor->visit( this );
 }
 
-NodePrefix::NodePrefix( Node::Type type, Node *operand )
-    : Node(type), m_operand(operand)
+SyntaxNodeUnary::SyntaxNodeUnary( SyntaxNode::Type type, SyntaxNode *operand )
+    : SyntaxNode(type), m_operand(operand)
 {
 }
 
-NodePrefix::~NodePrefix()
+SyntaxNodeUnary::~SyntaxNodeUnary()
 {
     if( m_operand ) delete m_operand;
 }
 
-Node *NodePrefix::operand()
+SyntaxNode *SyntaxNodeUnary::operand()
 { return m_operand; }
 
-void NodePrefix::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeUnary::acceptVisitor( NodeVisitor *visitor )
 {
     if( operand() )
         operand()->acceptVisitor( visitor );
 }
 
-NodePlus::NodePlus( Node *operand )
-    : NodePrefix(Node::TYPE_PLUS, operand)
+SyntaxNodePlus::SyntaxNodePlus( SyntaxNode *operand )
+    : SyntaxNodeUnary(SyntaxNode::TYPE_PLUS, operand)
 {
 }
 
-NodePlus::~NodePlus()
+SyntaxNodePlus::~SyntaxNodePlus()
 {
 }
 
-void NodePlus::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodePlus::acceptVisitor( NodeVisitor *visitor )
 {
-    NodePrefix::acceptVisitor( visitor );
+    SyntaxNodeUnary::acceptVisitor( visitor );
     visitor->visit( this );
 }
 
-NodeMinus::NodeMinus( Node *operand )
-    : NodePrefix(Node::TYPE_MINUS, operand)
+SyntaxNodeMinus::SyntaxNodeMinus( SyntaxNode *operand )
+    : SyntaxNodeUnary(SyntaxNode::TYPE_MINUS, operand)
 {
 }
 
-NodeMinus::~NodeMinus()
+SyntaxNodeMinus::~SyntaxNodeMinus()
 {
 }
 
-void NodeMinus::acceptVisitor( NodeVisitor *visitor )
+void SyntaxNodeMinus::acceptVisitor( NodeVisitor *visitor )
 {
-    NodePrefix::acceptVisitor( visitor );
+    SyntaxNodeUnary::acceptVisitor( visitor );
     visitor->visit( this );
 }

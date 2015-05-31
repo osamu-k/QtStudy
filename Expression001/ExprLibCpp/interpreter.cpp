@@ -13,7 +13,7 @@ Interpreter::~Interpreter()
 
 int Interpreter::interpret(string source)
 {
-    Node *node = m_parser.parse(source);
+    SyntaxNode *node = m_parser.parse(source);
     int ret = m_evaluator.evaluate(node);
     return ret;
 }

@@ -1,7 +1,7 @@
 #include "parser.h"
 
 Parser::Parser( Tokenizer *tokenizer )
-    : m_tokenizer(tokenizer),m_token(0),m_status(PARSING_OK)
+    : m_tokenizer(tokenizer),m_status(PARSING_OK)
 {
 }
 
@@ -9,59 +9,47 @@ Parser::~Parser()
 {
 }
 
-Node *Parser::parse( string source )
+SyntaxNode *Parser::parse( string source )
 {
     m_status = PARSING_OK;
     m_tokenizer->setSource( source );
     nextToken();
-    if( m_token == 0 || m_token->type() == Token::TYPE_END )
-        return 0;
-
-    Node *node = 0;
-    if( m_token->type() == Token::TYPE_KEYWORD_VAR ){
+    SyntaxNode *node = 0;
+    if( m_token.type() == Token::TYPE_KEYWORD_VAR ){
         node = parseAssign();
     }
     else{
         node = parseExpression();
     }
-    if( isError() ){
-        if( ! m_tokenizer->remainedString().empty() ){
+    if( ! isError() ){
+        if( ! m_tokenizer->remainedString().empty() )
             setError(PARSING_ERROR_EXTRA_CHARACTERS, "Unrecognized string '" + m_tokenizer->remainedString() + "'" );
-        }
-        else if( node == 0 ){
+        else if( node == 0 )
             setError(PARSING_ERROR_NO_EXPRESSION, "No eexpression.");
-        }
     }
     return node;
 }
 
-Node *Parser::parseExpression()
+SyntaxNode *Parser::parseExpression()
 {
-    Node *operand1 = parseTerm();
+    SyntaxNode *operand1 = parseTerm();
     if( operand1 == 0 || isError() ){
         return operand1;
     }
     while( true ){
-        string tokstr = m_token->getString();
-        if( m_token->type() == Token::TYPE_OPERATOR_ADD ){
+        if( (m_token.type() == Token::TYPE_OPERATOR_ADD)
+            ||(m_token.type() == Token::TYPE_OPERATOR_SUB) ){
+            Token token = m_token;
             nextToken();
-            Node *operand2 = parseTerm();
-            operand1 = new NodeAdd( operand1, operand2 );
+            SyntaxNode *operand2 = parseTerm();
+            if( token.type() == Token::TYPE_OPERATOR_ADD )
+                operand1 = new SyntaxNodeAdd( operand1, operand2 );
+            else
+                operand1 = new SyntaxNodeSub( operand1, operand2 );
             if( isError() )
                 return operand1;
             if( operand2 == 0 ){
-                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP,"No expression after operator '" + tokstr + "'.");
-                return operand1;
-            }
-        }
-        else if( m_token->type() == Token::TYPE_OPERATOR_SUB ){
-            nextToken();
-            Node *operand2 = parseTerm();
-            operand1 = new NodeSub( operand1, operand2 );
-            if( isError() )
-                return operand1;
-            if( operand2 == 0 ){
-                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP,"No expression after operator '" + tokstr + "'.");
+                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP,"No expression after operator '" + token.getString() + "'.");
                 return operand1;
             }
         }
@@ -72,33 +60,26 @@ Node *Parser::parseExpression()
     return operand1;
 }
 
-Node *Parser::parseTerm()
+SyntaxNode *Parser::parseTerm()
 {
-    Node *operand1 = parsePrefix();
+    SyntaxNode *operand1 = parsePrefix();
     if( operand1 == 0 || isError() ){
         return operand1;
     }
     while(true){
-        string tokstr = m_token->getString();
-        if( m_token->type() == Token::TYPE_OPERATOR_MUL ){
+        if( (m_token.type() == Token::TYPE_OPERATOR_MUL)
+            || (m_token.type() == Token::TYPE_OPERATOR_DIV) ){
+            Token token = m_token;
             nextToken();
-            Node *operand2 = parsePrefix();
-            operand1 = new NodeMul( operand1, operand2 );
+            SyntaxNode *operand2 = parsePrefix();
+            if(token.type() == Token::TYPE_OPERATOR_MUL)
+                operand1 = new SyntaxNodeMul( operand1, operand2 );
+            else
+                operand1 = new SyntaxNodeDiv( operand1, operand2 );
             if( isError() )
                 return operand1;
             if( operand2 == 0 ){
-                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP, "No expression after operator '" + tokstr + "'.");
-                return operand1;
-            }
-        }
-        else if( m_token->type() == Token::TYPE_OPERATOR_DIV ){
-            nextToken();
-            Node *operand2 = parsePrefix();
-            operand1 = new NodeDiv( operand1, operand2 );
-            if( isError() )
-                return operand1;
-            if( operand2 == 0 ){
-                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP, "No expression after operator '" + tokstr + "'.");
+                setError(PARSING_ERROR_NO_OPERAND_OF_BINARY_OP, "No expression after operator '" + token.getString() + "'.");
                 return operand1;
             }
         }
@@ -109,59 +90,55 @@ Node *Parser::parseTerm()
     return operand1;
 }
 
-Node *Parser::parsePrefix()
+SyntaxNode *Parser::parsePrefix()
 {
-    if( m_token->type() == Token::TYPE_OPERATOR_ADD ){
+    SyntaxNode *node = 0;
+    if( (m_token.type() == Token::TYPE_OPERATOR_ADD)
+        || (m_token.type() == Token::TYPE_OPERATOR_SUB) ){
+        Token token = m_token;
         nextToken();
-        Node *operand = parseFactor();
-        Node * node = new NodePlus( operand );
+        SyntaxNode *operand = parseFactor();
+        if(token.type() == Token::TYPE_OPERATOR_ADD)
+            node = new SyntaxNodePlus( operand );
+        else
+            node = new SyntaxNodeMinus( operand );
         if( isError() ){
             return node;
         }
         if( operand == 0 ){
-            setError(PARSING_ERROR_NO_OPERAND_OF_UNARY_OP, "No expression after operator '+'.");
+            setError(PARSING_ERROR_NO_OPERAND_OF_UNARY_OP, "No expression after operator '" + token.getString() + "'.");
             return node;
         }
-        return node;
-    }
-    else if( m_token->type() == Token::TYPE_OPERATOR_SUB ){
-        nextToken();
-        Node *operand = parseFactor();
-        Node * node = new NodeMinus( operand );
-        if( isError() ){
-            return node;
-        }
-        if( operand == 0 ){
-            setError(PARSING_ERROR_NO_OPERAND_OF_UNARY_OP, "No expression after operator '-'.");
-            return node;
-        }
-        return node;
     }
     else{
-        return parseFactor();
+        node = parseFactor();
     }
+    return node;
 }
 
-Node *Parser::parseFactor()
+SyntaxNode *Parser::parseFactor()
 {
-    if( m_token->type() == Token::TYPE_INTEGER ){
-        TokenInteger *tokenInt = dynamic_cast<TokenInteger *>(m_token);
-        Node *node = new NodeInteger( tokenInt->value() );
+    if( m_token.type() == Token::TYPE_NUMBER ){
+        SyntaxNode *node = new SyntaxNodeNumber( std::atoi(m_token.getString().c_str()) );
         nextToken();
         return node;
     }
-    else if( m_token->type() == Token::TYPE_NAME ){
-        TokenName *tokenName = dynamic_cast<TokenName *>(m_token);
-        Node *node = new NodeVarRef(tokenName->name());
+    else if( m_token.type() == Token::TYPE_NAME ){
+        SyntaxNode *node = new SyntaxNodeVarRef(m_token.getString());
         nextToken();
         return node;
     }
-    if( m_token->type() == Token::TYPE_PAREN_OPEN ){
+    if( m_token.type() == Token::TYPE_PAREN_OPEN ){
         nextToken();
-        Node *node = parseExpression();
+        SyntaxNode *node = parseExpression();
         if( isError() )
             return node;
-        if( m_token->type() != Token::TYPE_PAREN_CLOSE ){
+        if( node == 0 ){
+            fprintf(stderr,"%s:%d\n",__FUNCTION__,__LINE__);
+            setError(PARSING_ERROR_NO_EXPRESSION_AFTER_PARENTHESIS, "No expression after '('.");
+            return node;
+        }
+        if( m_token.type() != Token::TYPE_PAREN_CLOSE ){
             setError(PARSING_ERROR_NO_RIGHT_PARENTHESIS, "Parenthesis is not closed.");
             return node;
         }
@@ -171,37 +148,30 @@ Node *Parser::parseFactor()
     return 0;
 }
 
-Node *Parser::parseAssign()
+SyntaxNode *Parser::parseAssign()
 {
     nextToken();
-    if( m_token->type() != Token::TYPE_NAME ){
+    if( m_token.type() != Token::TYPE_NAME ){
         setError(PARSING_ERROR_NO_VARIABLE_NAME, "No variable name.");
-        return new NodeAssign( 0, 0 );
+        return new SyntaxNodeAssign( 0, 0 );
     }
-    TokenName *tokenName = dynamic_cast<TokenName*>(m_token);
-    NodeVarDecl *varDecl = new NodeVarDecl( tokenName->name() );
-
+    SyntaxNodeVarDecl *varDecl = new SyntaxNodeVarDecl( m_token.getString() );
     nextToken();
-    if( m_token->type() != Token::TYPE_ASSIGNMENT ){
+    if( m_token.type() != Token::TYPE_ASSIGNMENT ){
         setError(PARSING_ERROR_NO_EQUAL_OP, "No variable name.");
-        return new NodeAssign( varDecl, 0 );
+        return new SyntaxNodeAssign( varDecl, 0 );
     }
-
     nextToken();
-    Node *value = parseExpression();
-    if( isError() ){
+    SyntaxNode *value = parseExpression();
+    if( isError() )
         return value;
-    }
-    if( value == 0 ){
+    if( value == 0 )
         setError(PARSING_ERROR_NO_ASSIGNMENT_VALUE, "No expression after assignment operator.");
-        return new NodeAssign( varDecl, value );
-    }
-    return new NodeAssign( varDecl, value );
+    return new SyntaxNodeAssign( varDecl, value );
 }
 
 void Parser::nextToken()
 {
-    if( m_token ) delete m_token;
     m_token = m_tokenizer->next();
 }
 
@@ -210,19 +180,3 @@ void Parser::setError( ParsingStatus status, string message )
     m_status = status;
     m_errorMessage = message;
 }
-
-bool Parser::isError()
-{
-    return m_status != PARSING_OK;
-}
-
-Parser::ParsingStatus Parser::status()
-{
-    return m_status;
-}
-
-string Parser::errorMessage()
-{
-    return m_errorMessage;
-}
-

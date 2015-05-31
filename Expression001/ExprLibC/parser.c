@@ -5,7 +5,7 @@
 
 struct syntax_node *parse_expression();
 struct syntax_node *parse_term();
-struct syntax_node *parse_prefixed();
+struct syntax_node *parse_signed();
 struct syntax_node *parse_factor();
 struct syntax_node *parse_assignment();
 
@@ -39,6 +39,8 @@ struct syntax_node *parse( const char *source )
 
 struct syntax_node *parse_expression()
 {
+    if( status != PARSING_OK )
+        return 0;
     struct syntax_node *n1 = parse_term();
     if( n1 ){
         while( tokenizer_type() == TOKEN_OP_ADD_SUB ){
@@ -57,12 +59,14 @@ struct syntax_node *parse_expression()
 
 struct syntax_node *parse_term()
 {
-    struct syntax_node *n1 = parse_prefixed();
+    if( status != PARSING_OK )
+        return 0;
+    struct syntax_node *n1 = parse_signed();
     if( n1 ){
         while( tokenizer_type() == TOKEN_OP_MUL_DIV ){
             char symbol = tokenizer_string()[0];
             tokenizer_next();
-            struct syntax_node *n2 = parse_prefixed();
+            struct syntax_node *n2 = parse_signed();
             if( n2 == 0 ){
                 status = PARSING_ERROR_NO_OPERAND_OF_BINARY_OP;
                 break;
@@ -73,16 +77,21 @@ struct syntax_node *parse_term()
     return n1;
 }
 
-struct syntax_node *parse_prefixed()
+struct syntax_node *parse_signed()
 {
+    if( status != PARSING_OK )
+        return 0;
     if( tokenizer_type() == TOKEN_OP_ADD_SUB ){
         char symbol = tokenizer_string()[0];
         tokenizer_next();
         struct syntax_node *operand = parse_factor();
-        if( operand == 0 ){
-            status = PARSING_ERROR_NO_OPERAND_OF_UNARY_OP;
+        if( operand != 0 ){
+            return (struct syntax_node *)alloc_node_unary_op( symbol, operand );
         }
-        return (struct syntax_node *)alloc_node_unary_op( symbol, operand );
+        else{
+            status = PARSING_ERROR_NO_OPERAND_OF_UNARY_OP;
+            return 0;
+        }
     }
     else{
         return parse_factor();
@@ -91,6 +100,8 @@ struct syntax_node *parse_prefixed()
 
 struct syntax_node *parse_factor()
 {
+    if( status != PARSING_OK )
+        return 0;
     if( tokenizer_type() == TOKEN_NUMBER ){
         struct syntax_node_number *nn = alloc_node_number(atoi(tokenizer_string()));
         tokenizer_next();

@@ -9,7 +9,7 @@ Evaluator::~Evaluator()
 {
 }
 
-int Evaluator::evaluate( Node *node ){
+int Evaluator::evaluate( SyntaxNode *node ){
     m_status = EVALUATION_OK;
     m_errorMessage = "";
 
@@ -25,14 +25,14 @@ int Evaluator::evaluate( Node *node ){
     return value;
 }
 
-void Evaluator::visit( NodeInteger *node )
+void Evaluator::visit( SyntaxNodeNumber *node )
 {
     if( m_status != EVALUATION_OK )
         return;
     m_valueStack.push( node->value() );
 }
 
-void Evaluator::visit( NodeAdd *node )
+void Evaluator::visit( SyntaxNodeAdd *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -48,7 +48,7 @@ void Evaluator::visit( NodeAdd *node )
     m_valueStack.push( operand1 + operand2 );
 }
 
-void Evaluator::visit( NodeSub *node )
+void Evaluator::visit( SyntaxNodeSub *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -64,7 +64,7 @@ void Evaluator::visit( NodeSub *node )
     m_valueStack.push( operand1 - operand2 );
 }
 
-void Evaluator::visit( NodeMul *node )
+void Evaluator::visit( SyntaxNodeMul *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -80,7 +80,7 @@ void Evaluator::visit( NodeMul *node )
     m_valueStack.push( operand1 * operand2 );
 }
 
-void Evaluator::visit( NodeDiv *node )
+void Evaluator::visit( SyntaxNodeDiv *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -100,7 +100,7 @@ void Evaluator::visit( NodeDiv *node )
     m_valueStack.push( operand1 / operand2 );
 }
 
-void Evaluator::visit( NodePlus *node )
+void Evaluator::visit( SyntaxNodePlus *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -112,7 +112,7 @@ void Evaluator::visit( NodePlus *node )
     m_valueStack.push( operand );
 }
 
-void Evaluator::visit( NodeMinus *node )
+void Evaluator::visit( SyntaxNodeMinus *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -124,7 +124,7 @@ void Evaluator::visit( NodeMinus *node )
     m_valueStack.push( - operand );
 }
 
-void Evaluator::visit( NodeVarDecl *node )
+void Evaluator::visit( SyntaxNodeVarDecl *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -132,7 +132,7 @@ void Evaluator::visit( NodeVarDecl *node )
     m_varName = node->name();
 }
 
-void Evaluator::visit( NodeVarRef *node )
+void Evaluator::visit( SyntaxNodeVarRef *node )
 {
     if( m_status != EVALUATION_OK )
         return;
@@ -143,7 +143,7 @@ void Evaluator::visit( NodeVarRef *node )
     m_valueStack.push(m_varMap[node->name()]);
 }
 
-void Evaluator::visit( NodeAssign *node )
+void Evaluator::visit( SyntaxNodeAssign *node )
 {
     if( m_status != EVALUATION_OK )
         return;

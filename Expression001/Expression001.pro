@@ -5,4 +5,5 @@ SUBDIRS += \
     ExprLibCTest \
     ExprLibCpp \
     ExprLibCppTest \
-    ExprApp
+    ExprApp \
+    ExprLibCpp2

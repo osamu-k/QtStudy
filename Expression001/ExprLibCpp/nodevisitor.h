@@ -1,16 +1,16 @@
 #ifndef NODEVISITOR_H
 #define NODEVISITOR_H
 
-class NodeInteger;
-class NodeVarDecl;
-class NodeAdd;
-class NodeSub;
-class NodeMul;
-class NodeDiv;
-class NodePlus;
-class NodeMinus;
-class NodeVarRef;
-class NodeAssign;
+class SyntaxNodeNumber;
+class SyntaxNodeVarDecl;
+class SyntaxNodeAdd;
+class SyntaxNodeSub;
+class SyntaxNodeMul;
+class SyntaxNodeDiv;
+class SyntaxNodePlus;
+class SyntaxNodeMinus;
+class SyntaxNodeVarRef;
+class SyntaxNodeAssign;
 
 class NodeVisitor
 {
@@ -21,16 +21,16 @@ public:
     virtual ~NodeVisitor()
     {}
 
-    virtual void visit( NodeInteger * ) = 0;
-    virtual void visit( NodeVarDecl * ) = 0;
-    virtual void visit( NodeAdd * ) = 0;
-    virtual void visit( NodeSub * ) = 0;
-    virtual void visit( NodeMul * ) = 0;
-    virtual void visit( NodeDiv * ) = 0;
-    virtual void visit( NodePlus * ) = 0;
-    virtual void visit( NodeMinus * ) = 0;
-    virtual void visit( NodeVarRef * ) = 0;
-    virtual void visit( NodeAssign * ) = 0;
+    virtual void visit( SyntaxNodeNumber * ) = 0;
+    virtual void visit( SyntaxNodeVarDecl * ) = 0;
+    virtual void visit( SyntaxNodeAdd * ) = 0;
+    virtual void visit( SyntaxNodeSub * ) = 0;
+    virtual void visit( SyntaxNodeMul * ) = 0;
+    virtual void visit( SyntaxNodeDiv * ) = 0;
+    virtual void visit( SyntaxNodePlus * ) = 0;
+    virtual void visit( SyntaxNodeMinus * ) = 0;
+    virtual void visit( SyntaxNodeVarRef * ) = 0;
+    virtual void visit( SyntaxNodeAssign * ) = 0;
 };
 
 #endif // NODEVISITOR_H

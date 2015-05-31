@@ -33,7 +33,7 @@ MainWidget::~MainWidget()
 void MainWidget::inputTextChanged()
 {
     QString expression = lineInput->text();
-    Node *node = parser.parse( expression.toLatin1().constData() );
+    SyntaxNode *node = parser.parse( expression.toLatin1().constData() );
     lineError->clear();
     if( ! expression.isEmpty() ){
         if( parser.isError() ){
@@ -50,7 +50,7 @@ void MainWidget::returnPressed()
 
     lineError->clear();
 
-    Node *node = parser.parse( expression.toLatin1().constData() );
+    SyntaxNode *node = parser.parse( expression.toLatin1().constData() );
     if( parser.isError() ){
         lineError->setText( QString("Syntax error ! %1").arg(parser.errorMessage().c_str()) );
         return;

@@ -6,12 +6,12 @@
 #include <string>
 using namespace std;
 
-class Node
+class SyntaxNode
 {
 public:
     enum Type {
         TYPE_UNDEFINED,
-        TYPE_INTEGER,
+        TYPE_NUMBER,
         TYPE_ADD,
         TYPE_SUB,
         TYPE_MUL,
@@ -23,129 +23,129 @@ public:
         TYPE_MINUS
     };
 
-    Node( Type type = TYPE_UNDEFINED );
-    virtual ~Node();
+    SyntaxNode( Type type = TYPE_UNDEFINED );
+    virtual ~SyntaxNode();
     Type type();
     virtual void acceptVisitor( NodeVisitor *visitor ) = 0;
 private:
     Type m_type;
 };
 
-class NodeInteger : public  Node
+class SyntaxNodeNumber : public  SyntaxNode
 {
 public:
-    NodeInteger( int value );
-    ~NodeInteger();
+    SyntaxNodeNumber( int value );
+    ~SyntaxNodeNumber();
     int value();
     void acceptVisitor( NodeVisitor *visitor );
 private:
     int m_value;
 };
 
-class NodeInfix : public Node
+class SyntaxNodeBinary : public SyntaxNode
 {
 public:
-    NodeInfix( Type type, Node *operand1, Node *operand2 );
-    ~NodeInfix();
-    Node *operand1();
-    Node *operand2();
+    SyntaxNodeBinary( Type type, SyntaxNode *operand1, SyntaxNode *operand2 );
+    ~SyntaxNodeBinary();
+    SyntaxNode *operand1();
+    SyntaxNode *operand2();
     void acceptVisitor( NodeVisitor *visitor );
 private:
-     Node *m_operand1;
-     Node *m_operand2;
+     SyntaxNode *m_operand1;
+     SyntaxNode *m_operand2;
 };
 
-class NodeAdd : public NodeInfix
+class SyntaxNodeAdd : public SyntaxNodeBinary
 {
 public:
-    NodeAdd( Node *operand1, Node *operand2 );
-    ~NodeAdd();
+    SyntaxNodeAdd( SyntaxNode *operand1, SyntaxNode *operand2 );
+    ~SyntaxNodeAdd();
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class NodeSub : public NodeInfix
+class SyntaxNodeSub : public SyntaxNodeBinary
 {
 public:
-    NodeSub( Node *operand1, Node *operand2 );
-    ~NodeSub();
+    SyntaxNodeSub( SyntaxNode *operand1, SyntaxNode *operand2 );
+    ~SyntaxNodeSub();
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class NodeMul : public NodeInfix
+class SyntaxNodeMul : public SyntaxNodeBinary
 {
 public:
-    NodeMul( Node *operand1, Node *operand2 );
-    ~NodeMul();
+    SyntaxNodeMul( SyntaxNode *operand1, SyntaxNode *operand2 );
+    ~SyntaxNodeMul();
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class NodeDiv : public NodeInfix
+class SyntaxNodeDiv : public SyntaxNodeBinary
 {
 public:
-    NodeDiv( Node *operand1, Node *operand2 );
-    ~NodeDiv();
+    SyntaxNodeDiv( SyntaxNode *operand1, SyntaxNode *operand2 );
+    ~SyntaxNodeDiv();
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class NodeVarDecl : public Node
+class SyntaxNodeVarDecl : public SyntaxNode
 {
 public:
-    NodeVarDecl( string name );
-    ~NodeVarDecl();
+    SyntaxNodeVarDecl( string name );
+    ~SyntaxNodeVarDecl();
     string name();
     void acceptVisitor( NodeVisitor *visitor );
 private:
     string m_name;
 };
 
-class NodeVarRef : public Node
+class SyntaxNodeVarRef : public SyntaxNode
 {
 public:
-    NodeVarRef( string name );
-    ~NodeVarRef();
+    SyntaxNodeVarRef( string name );
+    ~SyntaxNodeVarRef();
     string name();
     void acceptVisitor( NodeVisitor *visitor );
 private:
     string m_name;
 };
 
-class NodeAssign : public Node
+class SyntaxNodeAssign : public SyntaxNode
 {
 public:
-    NodeAssign( NodeVarDecl *var, Node *value );
-    ~NodeAssign();
-    NodeVarDecl *var();
-    Node *value();
+    SyntaxNodeAssign( SyntaxNodeVarDecl *var, SyntaxNode *value );
+    ~SyntaxNodeAssign();
+    SyntaxNodeVarDecl *var();
+    SyntaxNode *value();
     void acceptVisitor( NodeVisitor *visitor );
 private:
-    NodeVarDecl *m_var;
-    Node *m_value;
+    SyntaxNodeVarDecl *m_var;
+    SyntaxNode *m_value;
 };
 
-class NodePrefix : public Node
+class SyntaxNodeUnary : public SyntaxNode
 {
 public:
-    NodePrefix( Node::Type type, Node *operand );
-    ~NodePrefix();
-    Node *operand();
+    SyntaxNodeUnary( SyntaxNode::Type type, SyntaxNode *operand );
+    ~SyntaxNodeUnary();
+    SyntaxNode *operand();
     void acceptVisitor( NodeVisitor *visitor );
 private:
-    Node *m_operand;
+    SyntaxNode *m_operand;
 };
 
-class NodePlus : public NodePrefix
+class SyntaxNodePlus : public SyntaxNodeUnary
 {
 public:
-    NodePlus( Node *operand );
-    ~NodePlus();
+    SyntaxNodePlus( SyntaxNode *operand );
+    ~SyntaxNodePlus();
     void acceptVisitor( NodeVisitor *visitor );
 };
 
-class NodeMinus : public NodePrefix
+class SyntaxNodeMinus : public SyntaxNodeUnary
 {
 public:
-    NodeMinus( Node *operand );
-    ~NodeMinus();
+    SyntaxNodeMinus( SyntaxNode *operand );
+    ~SyntaxNodeMinus();
     void acceptVisitor( NodeVisitor *visitor );
 };
 

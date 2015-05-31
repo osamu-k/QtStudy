@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char *source_text;
-static const char *next_char;
+static char *source_text = 0;
+static char *next_char = 0;
 static enum token_type current_type = TOKEN_UNDEFINED;
 static char *current_string = 0;
 
@@ -20,14 +20,8 @@ void tokenizer_set_text( const char *text )
     if(source_text != 0){
         free(source_text);
     }
-    if(text != 0){
-        source_text = strdup(text);
-        next_char = source_text;
-    }
-    else{
-        source_text = 0;
-        next_char = 0;
-    }
+    source_text = strdup(text);
+    next_char = source_text;
 
     current_type = TOKEN_UNDEFINED;
 
@@ -40,21 +34,16 @@ void tokenizer_set_text( const char *text )
 void tokenizer_next()
 {
     skip_spaces();
-    if( *next_char == 0 ){
+    if( *next_char == 0 )
         set_token( TOKEN_END, 0 );
-    }
-    if( get_name() ){
-        return;
-    }
-    else if( get_number() ){
-        return;
-    }
-    else if( get_single_char_token() ){
-        return;
-    }
-    else{
+    else if( get_name() )
+        ;
+    else if( get_number() )
+        ;
+    else if( get_single_char_token() )
+        ;
+    else
         set_token( TOKEN_UNRECOGNIZED, 0 );
-    }
 }
 
 static void skip_spaces()

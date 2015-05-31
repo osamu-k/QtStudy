@@ -15,7 +15,7 @@ TreeViewer::~TreeViewer()
     clearTreeStack();
 }
 
-void TreeViewer::setNode( Node *node )
+void TreeViewer::setNode( SyntaxNode *node )
 {
     clearTreeStack();
     if( node ){
@@ -24,52 +24,52 @@ void TreeViewer::setNode( Node *node )
     update();
 }
 
-void TreeViewer::visit( NodeInteger *node )
+void TreeViewer::visit( SyntaxNodeNumber *node )
 {
     makeSimpleTree( QString::number(node->value()) );
 }
 
-void TreeViewer::visit( NodeVarDecl *node )
+void TreeViewer::visit( SyntaxNodeVarDecl *node )
 {
     makeSimpleTree( node->name().c_str() );
 }
 
-void TreeViewer::visit( NodeAdd *node )
+void TreeViewer::visit( SyntaxNodeAdd *node )
 {
     makeBinaryTree( node, "+" );
 }
 
-void TreeViewer::visit( NodeSub *node )
+void TreeViewer::visit( SyntaxNodeSub *node )
 {
     makeBinaryTree( node, "-" );
 }
 
-void TreeViewer::visit( NodeMul *node )
+void TreeViewer::visit( SyntaxNodeMul *node )
 {
     makeBinaryTree( node, "*" );
 }
 
-void TreeViewer::visit( NodeDiv *node )
+void TreeViewer::visit( SyntaxNodeDiv *node )
 {
     makeBinaryTree( node, "/" );
 }
 
-void TreeViewer::visit( NodePlus *node )
+void TreeViewer::visit( SyntaxNodePlus *node )
 {
     makeUnaryTree( node, "+" );
 }
 
-void TreeViewer::visit( NodeMinus *node )
+void TreeViewer::visit( SyntaxNodeMinus *node )
 {
     makeUnaryTree( node, "-" );
 }
 
-void TreeViewer::visit( NodeVarRef *node )
+void TreeViewer::visit( SyntaxNodeVarRef *node )
 {
     makeSimpleTree( node->name().c_str() );
 }
 
-void TreeViewer::visit( NodeAssign *node )
+void TreeViewer::visit( SyntaxNodeAssign *node )
 {
     Tree *value = 0;
     if( node->value() ){
@@ -102,7 +102,7 @@ Tree *TreeViewer::makeSimpleTree( QString string )
     return tree;
 }
 
-Tree *TreeViewer::makeBinaryTree( NodeInfix *node, QString string )
+Tree *TreeViewer::makeBinaryTree( SyntaxNodeBinary *node, QString string )
 {
     Tree *operand2 = 0;
     if( node->operand2() ){
@@ -127,7 +127,7 @@ Tree *TreeViewer::makeBinaryTree( NodeInfix *node, QString string )
     return tree;
 }
 
-Tree *TreeViewer::makeUnaryTree( NodePrefix *node, QString string )
+Tree *TreeViewer::makeUnaryTree( SyntaxNodeUnary *node, QString string )
 {
     Tree *operand = 0;
     if( node->operand() ){

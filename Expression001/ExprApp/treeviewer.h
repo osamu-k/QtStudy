@@ -16,18 +16,18 @@ public:
     explicit TreeViewer(QWidget *parent = 0);
     ~TreeViewer();
 
-    void setNode( Node *tree );
+    void setNode( SyntaxNode *tree );
 
-    void visit( NodeInteger * );
-    void visit( NodeVarDecl * );
-    void visit( NodeAdd * );
-    void visit( NodeSub * );
-    void visit( NodeMul * );
-    void visit( NodeDiv * );
-    void visit( NodePlus * );
-    void visit( NodeMinus * );
-    void visit( NodeVarRef * );
-    void visit( NodeAssign * );
+    void visit( SyntaxNodeNumber * );
+    void visit( SyntaxNodeVarDecl * );
+    void visit( SyntaxNodeAdd * );
+    void visit( SyntaxNodeSub * );
+    void visit( SyntaxNodeMul * );
+    void visit( SyntaxNodeDiv * );
+    void visit( SyntaxNodePlus * );
+    void visit( SyntaxNodeMinus * );
+    void visit( SyntaxNodeVarRef * );
+    void visit( SyntaxNodeAssign * );
 
 signals:
 
@@ -38,8 +38,8 @@ protected:
 
 private:
     Tree *makeSimpleTree( QString string );
-    Tree *makeBinaryTree( NodeInfix *node, QString string );
-    Tree *makeUnaryTree( NodePrefix *node, QString string );
+    Tree *makeBinaryTree( SyntaxNodeBinary *node, QString string );
+    Tree *makeUnaryTree( SyntaxNodeUnary *node, QString string );
     void clearTreeStack();
 
     stack<Tree *> m_treeStack;

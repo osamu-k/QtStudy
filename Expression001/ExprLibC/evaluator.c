@@ -57,48 +57,40 @@ static int evaluate_variable(struct syntax_node *n)
 
 static int evaluate_binary_op(struct syntax_node *n)
 {
-    int value = 0;
     struct syntax_node_binary_op *nb = (struct syntax_node_binary_op *)n;
     int o1 = evaluate( nb->operand1 );
     int o2 = evaluate( nb->operand2 );
     switch( nb->symbol ){
     case '+':
-        value = o1 + o2;
-        break;
+        return o1 + o2;
     case '-':
-        value = o1 - o2;
-        break;
+        return o1 - o2;
     case '*':
-        value = o1 * o2;
-        break;
+        return o1 * o2;
     case '/':
         if( o2 != 0 )
-            value = o1 / o2;
-        else
+            return o1 / o2;
+        else{
             status = EVALUATION_ERROR_DIVIDED_BY_ZERO;
-        break;
+            return 0;
+        }
     default:
-        break;
+        return 0;
     }
-    return value;
 }
 
 static int evaluate_unary_op(struct syntax_node *n)
 {
-    int value = 0;
     struct syntax_node_unary_op *nb = (struct syntax_node_unary_op *)n;
     int o = evaluate( nb->operand );
     switch( nb->symbol ){
     case '+':
-        value = o;
-        break;
+        return o;
     case '-':
-        value = - o;
-        break;
+        return - o;
     default:
-        break;
+        return 0;
     }
-    return value;
 }
 
 static int evaluate_assignment(struct syntax_node *n)

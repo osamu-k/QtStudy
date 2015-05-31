@@ -20,17 +20,17 @@ public:
 
     Evaluator();
     ~Evaluator();
-    int evaluate( Node *node );
-    void visit( NodeInteger *node );
-    void visit( NodeAdd *node );
-    void visit( NodeSub *node );
-    void visit( NodeMul *node );
-    void visit( NodeDiv *node );
-    void visit( NodePlus *node );
-    void visit( NodeMinus *node );
-    void visit( NodeVarDecl *node );
-    void visit( NodeVarRef *node );
-    void visit( NodeAssign *node );
+    int evaluate( SyntaxNode *node );
+    void visit( SyntaxNodeNumber *node );
+    void visit( SyntaxNodeAdd *node );
+    void visit( SyntaxNodeSub *node );
+    void visit( SyntaxNodeMul *node );
+    void visit( SyntaxNodeDiv *node );
+    void visit( SyntaxNodePlus *node );
+    void visit( SyntaxNodeMinus *node );
+    void visit( SyntaxNodeVarDecl *node );
+    void visit( SyntaxNodeVarRef *node );
+    void visit( SyntaxNodeAssign *node );
     void setError( EvaluationStatus status, string message );
     bool isError();
     EvaluationStatus status();
