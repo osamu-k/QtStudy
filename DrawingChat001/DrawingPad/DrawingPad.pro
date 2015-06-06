@@ -14,7 +14,7 @@ TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++11 -stdlib=libc++
 
 SOURCES += main.cpp\
-        drawingpad.cpp \
+    drawingpad.cpp \
     freehand.cpp \
     shape.cpp \
     rectangle.cpp \
@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     image.cpp \
     imagepainter.cpp \
     shapemanipulator.cpp \
-    imagemanipulator.cpp
+    imagemanipulator.cpp \
+    drawingview.cpp
 
 HEADERS  += drawingpad.h \
     freehand.h \
@@ -53,7 +54,8 @@ HEADERS  += drawingpad.h \
     image.h \
     imagepainter.h \
     shapemanipulator.h \
-    imagemanipulator.h
+    imagemanipulator.h \
+    drawingview.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../BroadcastLib/release/ -lBroadcastLib

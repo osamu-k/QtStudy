@@ -29,7 +29,7 @@ void DrawingModel::addShape(Shape *shape)
     emit drawingChanged();
 }
 
-void   DrawingModel::shiftShape(Shape *shape, QPoint diff)
+void   DrawingModel::slideShape(Shape *shape, QPoint diff)
 {
     QByteArray byteArray;
     QDataStream outStream(&byteArray,QIODevice::WriteOnly);

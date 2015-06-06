@@ -23,7 +23,7 @@ public:
     DrawingModel();
     ~DrawingModel();
     void addShape(Shape *shape);
-    void shiftShape(Shape *shape, QPoint diff);
+    void slideShape(Shape *shape, QPoint diff);
     QList<Shape *> shapeList();
     void clear();
     void writeTo( QDataStream &outStream );

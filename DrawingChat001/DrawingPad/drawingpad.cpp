@@ -79,7 +79,7 @@ void DrawingPad::mouseMoveEvent( QMouseEvent *event )
         update(region);
         m_lastPos = event->pos();
 
-        m_model->shiftShape(m_selectedShape,diff);
+        m_model->slideShape(m_selectedShape,diff);
     }
 }
 
@@ -98,7 +98,7 @@ void DrawingPad::mouseReleaseEvent( QMouseEvent *event )
         m_selectedShape->shift(diff);
         region.united(m_selectedShape->boundingRect());
         update(region);
-        m_model->shiftShape(m_selectedShape,diff);
+        m_model->slideShape(m_selectedShape,diff);
         m_selectedShape = 0;
     }
 }
