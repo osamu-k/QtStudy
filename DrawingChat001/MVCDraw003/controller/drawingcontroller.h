@@ -1,25 +1,22 @@
-#ifndef DRAWINGPAD_H
-#define DRAWINGPAD_H
+#ifndef DRAWCONTROLLER_H
+#define DRAWCONTROLLER_H
 
-#include <QDataStream>
-#include <QList>
-#include <QMap>
-#include <QPolygon>
-#include <QWidget>
-
-#include "drawingsettings.h"
+#include "drawingview.h"
 #include "shape.h"
 #include "shapemaker.h"
-#include "shapespace.h"
 
-class DrawingPad : public QWidget
+#include <QMouseEvent>
+#include <QObject>
+
+class DrawingController : public QObject
 {
     Q_OBJECT
 
 public:
-    DrawingPad(QWidget *parent = 0);
-    ~DrawingPad();
-    QSize sizeHint() const { return QSize(500,500); }
+    DrawingController();
+    ~DrawingController();
+
+    void setView( DrawingView *view );
 
     void clear();
 
@@ -31,18 +28,18 @@ public:
     void writeTo( QDataStream &out );
     void readFrom( QDataStream &in );
 
-protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
+private:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
-    void paintEvent(QPaintEvent *);
-
-private:
+    DrawingView *m_view;
     Shape::Type m_shapeType;
     DrawingSettings m_settings;
     QMap<Shape::Type,ShapeMaker *> m_shapeMakerMap;
     ShapeSpace *m_shapeSpace;
 };
 
-#endif // DRAWINGPAD_H
+#endif // DRAWCONTROLLER_H

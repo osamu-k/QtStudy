@@ -14,11 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    drawingpad.cpp \
-    freehandmaker.cpp \
     linewidthdialog.cpp \
-    rectanglemaker.cpp \
-    shapemaker.cpp \
     model/drawingsettings.cpp \
     model/freehand.cpp \
     model/freehandfactory.cpp \
@@ -28,14 +24,15 @@ SOURCES += main.cpp\
     model/shapefactory.cpp \
     model/shapespace.cpp \
     model/shapevisitor.cpp \
-    view/drawvisitor.cpp
+    view/drawvisitor.cpp \
+    controller/drawingcontroller.cpp \
+    view/drawingview.cpp \
+    controller/freehandmaker.cpp \
+    controller/rectanglemaker.cpp \
+    controller/shapemaker.cpp
 
 HEADERS  += mainwindow.h \
-    drawingpad.h \
-    freehandmaker.h \
     linewidthdialog.h \
-    rectanglemaker.h \
-    shapemaker.h \
     model/drawingsettings.h \
     model/freehand.h \
     model/freehandfactory.h \
@@ -45,9 +42,15 @@ HEADERS  += mainwindow.h \
     model/shapefactory.h \
     model/shapespace.h \
     model/shapevisitor.h \
-    view/drawvisitor.h
+    view/drawvisitor.h \
+    controller/drawingcontroller.h \
+    view/drawingview.h \
+    controller/freehandmaker.h \
+    controller/rectanglemaker.h \
+    controller/shapemaker.h
 
 INCLUDEPATH += . \
+    controller \
     model \
     view
 

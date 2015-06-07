@@ -10,7 +10,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , m_drawingPad(0)
+//    , m_drawingPad(0)
+    , m_controller(0)
+    , m_view(0)
     , m_menuFile(0)
     , m_menuEdit(0)
     , m_menuShapeType(0)
@@ -27,8 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
     , m_actionFillColorEnabled(0)
     , m_actionNewWindow(0)
 {
-    m_drawingPad = new DrawingPad;
-    setCentralWidget(m_drawingPad);
+//    m_drawingPad = new DrawingPad;
+//    setCentralWidget(m_drawingPad);
+    m_controller = new DrawingController();
+    m_view = new DrawingView();
+    m_controller->setView(m_view);
+    setCentralWidget(m_view);
 
     m_actionNew = new QAction(tr("New"),this);
     m_actionOpen = new QAction(tr("Open"),this);
@@ -87,10 +93,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_actionNewWindow,SIGNAL(triggered()),this,SLOT(newWindow()));
 
-    m_actionShapeFreeHand->setChecked( m_drawingPad->shapeType() == Shape::TYPE_FREEHAND );
-    m_actionShapeRectangle->setChecked( m_drawingPad->shapeType() == Shape::TYPE_RECTANGLE );
-    m_actionOutlineEnabled->setChecked( m_drawingPad->drawingSettings().isOutlineEnabled() );
-    m_actionFillColorEnabled->setChecked( m_drawingPad->drawingSettings().isFillColorEnabled() );
+//    m_actionShapeFreeHand->setChecked( m_drawingPad->shapeType() == Shape::TYPE_FREEHAND );
+//    m_actionShapeRectangle->setChecked( m_drawingPad->shapeType() == Shape::TYPE_RECTANGLE );
+//    m_actionOutlineEnabled->setChecked( m_drawingPad->drawingSettings().isOutlineEnabled() );
+//    m_actionFillColorEnabled->setChecked( m_drawingPad->drawingSettings().isFillColorEnabled() );
+    m_actionShapeFreeHand->setChecked( m_controller->shapeType() == Shape::TYPE_FREEHAND );
+    m_actionShapeRectangle->setChecked( m_controller->shapeType() == Shape::TYPE_RECTANGLE );
+    m_actionOutlineEnabled->setChecked( m_controller->drawingSettings().isOutlineEnabled() );
+    m_actionFillColorEnabled->setChecked( m_controller->drawingSettings().isFillColorEnabled() );
 }
 
 MainWindow::~MainWindow()
@@ -99,7 +109,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::newDrawing()
 {
-    m_drawingPad->clear();
+//    m_drawingPad->clear();
+    m_controller->clear();
 }
 
 void MainWindow::openFile()
@@ -124,7 +135,8 @@ void MainWindow::openFile()
             return;
         }
         QDataStream in(&file);
-        m_drawingPad->readFrom( in );
+//        m_drawingPad->readFrom( in );
+        m_controller->readFrom( in );
     }
 }
 
@@ -150,7 +162,8 @@ void MainWindow::saveFile()
             return;
         }
         QDataStream out(&file);
-        m_drawingPad->writeTo( out );
+//        m_drawingPad->writeTo( out );
+        m_controller->writeTo( out );
     }
 }
 
@@ -158,14 +171,16 @@ void MainWindow::setShapeFreeHand()
 {
     m_actionShapeFreeHand->setChecked(true);
     m_actionShapeRectangle->setChecked(false);
-    m_drawingPad->setShapeType(Shape::TYPE_FREEHAND);
+//    m_drawingPad->setShapeType(Shape::TYPE_FREEHAND);
+    m_controller->setShapeType(Shape::TYPE_FREEHAND);
 }
 
 void MainWindow::setShapeRectangle()
 {
     m_actionShapeFreeHand->setChecked(false);
     m_actionShapeRectangle->setChecked(true);
-    m_drawingPad->setShapeType(Shape::TYPE_RECTANGLE);
+//    m_drawingPad->setShapeType(Shape::TYPE_RECTANGLE);
+    m_controller->setShapeType(Shape::TYPE_RECTANGLE);
 }
 
 void MainWindow::setLineColor()
@@ -173,7 +188,8 @@ void MainWindow::setLineColor()
     QColorDialog dialog(this);
     dialog.setWindowTitle(tr("Select line color"));
     if( dialog.exec() ){
-        m_drawingPad->drawingSettings().setLineColor(dialog.selectedColor());
+//        m_drawingPad->drawingSettings().setLineColor(dialog.selectedColor());
+        m_controller->drawingSettings().setLineColor(dialog.selectedColor());
     }
 }
 
@@ -182,29 +198,36 @@ void MainWindow::setFillColor()
     QColorDialog dialog(this);
     dialog.setWindowTitle(tr("Select fill color"));
     if( dialog.exec() ){
-        m_drawingPad->drawingSettings().setFillColor(dialog.selectedColor());
+//        m_drawingPad->drawingSettings().setFillColor(dialog.selectedColor());
+        m_controller->drawingSettings().setFillColor(dialog.selectedColor());
     }
 }
 
 void MainWindow::setLineWidth()
 {
     LineWidthDialog dialog(this);
-    dialog.setLineWidth(m_drawingPad->drawingSettings().lineWidth());
+//    dialog.setLineWidth(m_drawingPad->drawingSettings().lineWidth());
+    dialog.setLineWidth(m_controller->drawingSettings().lineWidth());
     if( dialog.exec() ){
-        m_drawingPad->drawingSettings().setLineWidth(dialog.lineWidth());
+//        m_drawingPad->drawingSettings().setLineWidth(dialog.lineWidth());
+        m_controller->drawingSettings().setLineWidth(dialog.lineWidth());
     }
 }
 
 void MainWindow::setOutlineEnabled()
 {
-    m_drawingPad->drawingSettings().setOutlineEnabled( ! m_drawingPad->drawingSettings().isOutlineEnabled() );
-    m_actionOutlineEnabled->setChecked( m_drawingPad->drawingSettings().isOutlineEnabled() );
+//    m_drawingPad->drawingSettings().setOutlineEnabled( ! m_drawingPad->drawingSettings().isOutlineEnabled() );
+//    m_actionOutlineEnabled->setChecked( m_drawingPad->drawingSettings().isOutlineEnabled() );
+    m_controller->drawingSettings().setOutlineEnabled( ! m_controller->drawingSettings().isOutlineEnabled() );
+    m_actionOutlineEnabled->setChecked( m_controller->drawingSettings().isOutlineEnabled() );
 }
 
 void MainWindow::setFillColorEnabled()
 {
-    m_drawingPad->drawingSettings().setFillColorEnabled( ! m_drawingPad->drawingSettings().isFillColorEnabled() );
-    m_actionFillColorEnabled->setChecked( m_drawingPad->drawingSettings().isFillColorEnabled() );
+//    m_drawingPad->drawingSettings().setFillColorEnabled( ! m_drawingPad->drawingSettings().isFillColorEnabled() );
+//    m_actionFillColorEnabled->setChecked( m_drawingPad->drawingSettings().isFillColorEnabled() );
+    m_controller->drawingSettings().setFillColorEnabled( ! m_controller->drawingSettings().isFillColorEnabled() );
+    m_actionFillColorEnabled->setChecked( m_controller->drawingSettings().isFillColorEnabled() );
 }
 
 void MainWindow::newWindow()

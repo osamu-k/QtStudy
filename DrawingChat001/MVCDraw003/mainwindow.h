@@ -1,7 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "drawingpad.h"
+//#include "drawingpad.h"
+#include "drawingcontroller.h"
+#include "drawingview.h"
 
 #include <QMainWindow>
 
@@ -29,11 +31,15 @@ private slots:
     void newWindow();
 
 private:
-    DrawingPad *m_drawingPad;
+//    DrawingPad *m_drawingPad;
+    DrawingController *m_controller;
+    DrawingView *m_view;
+
     QMenu *m_menuFile;
     QMenu *m_menuEdit;
     QMenu *m_menuShapeType;
     QMenu *m_menuDisplay;
+
     QAction *m_actionNew;
     QAction *m_actionOpen;
     QAction *m_actionSave;
