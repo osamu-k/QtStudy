@@ -23,9 +23,6 @@ DrawingPad::DrawingPad(QWidget *parent)
     m_shapeMakerMap[Shape::TYPE_FREEHAND] = freeHandMaker;
     m_shapeMakerMap[Shape::TYPE_RECTANGLE] = rectangleMaker;
 
-    connect(freeHandMaker,SIGNAL(newShape()),this,SLOT(newShape()));
-    connect(rectangleMaker,SIGNAL(newShape()),this,SLOT(newShape()));
-
     m_settings.setLineColor(Qt::black);
     m_settings.setLineWidth(0);
 }
@@ -70,12 +67,6 @@ void DrawingPad::mouseReleaseEvent(QMouseEvent *event)
     update();
 }
 
-void DrawingPad::newShape()
-{
-    ShapeMaker *maker = qobject_cast<ShapeMaker *>(sender());
-    m_shapeSpace->addShape(maker->takeShape());
-}
-
 void DrawingPad::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
@@ -83,34 +74,14 @@ void DrawingPad::paintEvent(QPaintEvent *)
         Shape *shape = m_shapeSpace->shape(i);
         shape->draw(painter);
     }
-    ShapeMaker *maker = m_shapeMakerMap[m_shapeType];
-    if( maker )
-        maker->draw(painter);
 }
 
 void DrawingPad::writeTo( QDataStream &out )
 {
-    out << static_cast<qint16>(m_shapeSpace->shapeCount());
-    for( int i = 0; i < m_shapeSpace->shapeCount(); i++ ){
-        Shape *shape = m_shapeSpace->shape(i);
-        out << static_cast<qint16>(shape->type());
-        shape->writeTo( out );
-    }
+    m_shapeSpace->writeTo(out);
 }
 
 void DrawingPad::readFrom( QDataStream &in )
 {
-    clear();
-    qint16 count;
-    in >> count;
-    qDebug() << "count = " << count;
-    for( int i = 0; i < count; i++ ){
-        qint16 type;
-        in >> type;
-        qDebug() << "type = " << type;
-        foreach( ShapeMaker *maker, m_shapeMakerMap ){
-            if( maker->readFrom( in, static_cast<Shape::Type>(type) ) )
-                break;
-        }
-    }
+    m_shapeSpace->readFrom(in);
 }

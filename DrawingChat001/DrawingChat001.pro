@@ -11,4 +11,5 @@ SUBDIRS += \
     SimpleDraw004 \
     SimpleDraw005 \
     SimpleDraw006 \
-    MVCDraw001
+    MVCDraw001 \
+    MVCDraw002
