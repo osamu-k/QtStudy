@@ -27,6 +27,8 @@ QPoint FreeHand::point(int index) const
 
 void FreeHand::draw( QPainter &painter ) const
 {
+    painter.save();
     painter.setPen(QPen(m_lineColor,m_lineWidth,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter.drawPolyline(m_polygon);
+    painter.restore();
 }

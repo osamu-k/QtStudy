@@ -1,6 +1,7 @@
 #include "rectanglemaker.h"
 
-RectangleMaker::RectangleMaker()
+RectangleMaker::RectangleMaker( DrawingSettings *settings )
+    : ShapeMaker( settings )
 {
 }
 
@@ -11,8 +12,7 @@ RectangleMaker::~RectangleMaker()
 void RectangleMaker::mousePressEvent(QMouseEvent *event)
 {
     m_rectangle = new Rectangle();
-    m_rectangle->setLineColor( m_lineColor );
-    m_rectangle->setLineWidth(m_lineWidth);
+    m_rectangle->setDrawingSettings(*m_settings);
     m_rectangle->setPoint1(event->pos());
     m_rectangle->setPoint2(event->pos());
 }

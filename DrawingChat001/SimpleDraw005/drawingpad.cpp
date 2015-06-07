@@ -13,8 +13,8 @@ DrawingPad::DrawingPad(QWidget *parent)
     setAutoFillBackground(true);
     setPalette(Qt::white);
 
-    FreeHandMaker *freeHandMaker = new FreeHandMaker();
-    RectangleMaker *rectangleMaker = new RectangleMaker();
+    FreeHandMaker *freeHandMaker = new FreeHandMaker( &m_settings );
+    RectangleMaker *rectangleMaker = new RectangleMaker( &m_settings );
 
     m_shapeMakerMap[Shape::TYPE_FREEHAND] = freeHandMaker;
     m_shapeMakerMap[Shape::TYPE_RECTANGLE] = rectangleMaker;
@@ -22,26 +22,21 @@ DrawingPad::DrawingPad(QWidget *parent)
     connect(freeHandMaker,SIGNAL(newShape()),this,SLOT(newShape()));
     connect(rectangleMaker,SIGNAL(newShape()),this,SLOT(newShape()));
 
-    setLineColor(Qt::black);
-    setLineWidth(0);
+    m_settings.setLineColor(Qt::black);
+    m_settings.setLineWidth(0);
 }
 
 DrawingPad::~DrawingPad()
 {
-}
+    foreach( ShapeMaker *maker, m_shapeMakerMap.values() ){
+        delete maker;
+    }
+    m_shapeMakerMap.clear();
 
-void DrawingPad::setLineColor(QColor color)
-{
-    m_lineColor = color;
-    foreach( ShapeMaker *maker, m_shapeMakerMap.values() )
-        maker->setLineColor(color);
-}
-
-void DrawingPad::setLineWidth(int width)
-{
-    m_lineWidth = width;
-    foreach( ShapeMaker *maker, m_shapeMakerMap.values() )
-        maker->setLineWidth(width);
+    foreach( Shape *shape, m_shapeList ){
+        delete shape;
+    }
+    m_shapeList.clear();
 }
 
 void DrawingPad::mousePressEvent(QMouseEvent *event)

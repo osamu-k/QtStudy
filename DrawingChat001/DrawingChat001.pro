@@ -8,4 +8,7 @@ SUBDIRS += \
     SimpleDraw001 \
     SimpleDraw002 \
     SimpleDraw003 \
-    SimpleShape004
+    SimpleDraw004 \
+    SimpleDraw005 \
+    SimpleDraw006 \
+    MVCDraw001

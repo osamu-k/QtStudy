@@ -19,6 +19,10 @@ DrawingPad::DrawingPad(QWidget *parent)
 
 DrawingPad::~DrawingPad()
 {
+    foreach( Shape *shape, m_shapeList ){
+        delete shape;
+    }
+    m_shapeList.clear();
 }
 
 void DrawingPad::mousePressEvent(QMouseEvent *event)

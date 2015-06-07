@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 LineWidthDialog::LineWidthDialog(QWidget *parent)
+    :QDialog(parent)
 {
     setWindowTitle(tr("Select line width"));
 

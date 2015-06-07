@@ -1,11 +1,13 @@
 #ifndef DRAWINGPAD_H
 #define DRAWINGPAD_H
 
+#include <QDataStream>
 #include <QList>
 #include <QMap>
 #include <QPolygon>
 #include <QWidget>
 
+#include "drawingsettings.h"
 #include "shape.h"
 #include "shapemaker.h"
 
@@ -18,14 +20,15 @@ public:
     ~DrawingPad();
     QSize sizeHint() const { return QSize(500,500); }
 
+    void clear();
+
     void setShapeType(Shape::Type shapeType){ m_shapeType = shapeType; }
     Shape::Type shapeType() const { return m_shapeType; }
 
-    void setLineColor(QColor color);
-    QColor lineColor() const { return m_lineColor; }
+    DrawingSettings &drawingSettings() { return m_settings; }
 
-    void setLineWidth(int width);
-    int lineWidth() const { return m_lineWidth; }
+    void writeTo( QDataStream &out );
+    void readFrom( QDataStream &in );
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -38,17 +41,8 @@ private slots:
     void newShape();
 
 private:
-    void mousePressForFreeHand(QMouseEvent *event);
-    void mouseMoveForFreeHand(QMouseEvent *event);
-    void mouseReleaseForFreeHand(QMouseEvent *event);
-
-    void mousePressForRectangle(QMouseEvent *event);
-    void mouseMoveForRectangle(QMouseEvent *event);
-    void mouseReleaseForRectangle(QMouseEvent *event);
-
     Shape::Type m_shapeType;
-    QColor m_lineColor;
-    int m_lineWidth;
+    DrawingSettings m_settings;
     QMap<Shape::Type,ShapeMaker *> m_shapeMakerMap;
     QList<Shape *> m_shapeList;
 };
