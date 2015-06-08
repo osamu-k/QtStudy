@@ -13,4 +13,6 @@ SUBDIRS += \
     SimpleDraw006 \
     MVCDraw001 \
     MVCDraw002 \
-    MVCDraw003
+    MVCDraw003 \
+    ZoomingDraw001 \
+    MVCDraw004
