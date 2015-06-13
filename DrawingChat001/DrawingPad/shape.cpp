@@ -15,7 +15,6 @@ Shape::Shape(int type)
 
 Shape::~Shape()
 {
-
 }
 
 void Shape::setId(qint64 id)

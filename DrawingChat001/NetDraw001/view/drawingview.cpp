@@ -1,20 +1,17 @@
 #include "drawingview.h"
 
-#include <QDebug>
-
-DrawingView::DrawingView()
-    : m_scale(1.0)
+DrawingView::DrawingView(ShapeSpace *shapeSpace)
+    : m_shapeSpace(shapeSpace)
+    , m_scale(1.0)
 {
     setAutoFillBackground(true);
     setPalette(Qt::white);
 
-    m_shapeSpace = ShapeSpace::instance();
     connect(m_shapeSpace, SIGNAL(changed()),this,SLOT(update()));
 }
 
 DrawingView::~DrawingView()
 {
-
 }
 
 void DrawingView::paintEvent(QPaintEvent *)
@@ -22,11 +19,18 @@ void DrawingView::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.scale(m_scale,m_scale);
     DrawVisitor visitor(painter);
+
     for( int i = 0; i < m_shapeSpace->shapeCount(); i++ ){
         Shape *shape = m_shapeSpace->shape(i);
-        qDebug() << "DrawingView::paintEvent shape->type() = " << shape->type();
         shape->accept(&visitor);
     }
+
+    painter.save();
+    painter.setOpacity(0.75);
+    foreach( Shape *shape, m_workingShape ){
+        shape->accept(&visitor);
+    }
+    painter.restore();
 }
 
 void DrawingView::setOriginalSize(QSize size)
@@ -57,4 +61,16 @@ QPointF DrawingView::logicalPoint( QPointF p )
 {
     return QPointF( (p.x() / m_scale),
                     (p.y() / m_scale) );
+}
+
+void DrawingView::addWorkingShape( Shape *shape )
+{
+    m_workingShape.push_back(shape);
+    update();
+}
+
+void DrawingView::removeWorkngShape( Shape *shape )
+{
+    m_workingShape.removeAll(shape);
+    update();
 }

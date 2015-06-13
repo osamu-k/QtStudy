@@ -15,4 +15,6 @@ SUBDIRS += \
     MVCDraw002 \
     MVCDraw003 \
     ZoomingDraw001 \
-    MVCDraw004
+    MVCDraw004 \
+    NetDraw001 \
+    BroadcastLib002
