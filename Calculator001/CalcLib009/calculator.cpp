@@ -12,6 +12,7 @@ Calculator::Calculator(QWidget *parent)
     , m_display1(0)
     , m_display2(0)
     , m_operatorFunc(0)
+    , m_operand1(0)
 {
     QLayout *layoutNumber = setupNumberButtons();
     QLayout *layoutVarious = setupVariousButtons();
@@ -157,22 +158,19 @@ void Calculator::operatorButtonClicked()
         str.append(" ");
         str.append(button->text());
         m_display1->setText(str);
-        m_display2->clear();
-
+        m_operand1 = m_display2->text().toLong();
         m_operatorFunc = m_operatorMap[button];
+        m_display2->clear();
     }
 }
 
 void Calculator::equalButtonClicked()
 {
-    if( m_operatorFunc ){
-        QStringList slist = m_display1->text().split(" ");
-        if( (slist.size() == 2) && (! m_display2->text().isEmpty()) ){
-            long operand1 = slist[0].toLong();
-            long operand2 = m_display2->text().toLong();
-            if( (this->*m_operatorFunc)(operand1,operand2) ){
-                m_operatorFunc = 0;
-            }
+    if( m_operatorFunc && (! m_display2->text().isEmpty())){
+        long operand2 = m_display2->text().toLong();
+        if( (this->*m_operatorFunc)(m_operand1,operand2) ){
+            m_operatorFunc = 0;
+            m_operand1 = 0;
         }
     }
 }

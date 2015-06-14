@@ -46,6 +46,7 @@ private:
     typedef bool (Calculator::*operatorFuncPtr)(long,long);
     QMap<QPushButton *, operatorFuncPtr> m_operatorMap;
     operatorFuncPtr m_operatorFunc;
+    long m_operand1;
 };
 
 #endif // CALCULATOR_H
