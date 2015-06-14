@@ -18,10 +18,9 @@ public:
     int lineWidth() const { return m_lineWidth; }
 
     void addPoint(QPoint point);
-    QPoint point(int index) const ;
     void clearPoints() { m_polygon.clear(); }
 
-    void draw( QPainter &painter ) const;
+    void draw(QPainter &painter) const;
 
 private:
     QColor m_lineColor;

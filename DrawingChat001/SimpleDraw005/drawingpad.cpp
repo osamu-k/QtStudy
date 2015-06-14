@@ -19,8 +19,8 @@ DrawingPad::DrawingPad(QWidget *parent)
     m_shapeMakerMap[Shape::TYPE_FREEHAND] = freeHandMaker;
     m_shapeMakerMap[Shape::TYPE_RECTANGLE] = rectangleMaker;
 
-    connect(freeHandMaker,SIGNAL(newShape()),this,SLOT(newShape()));
-    connect(rectangleMaker,SIGNAL(newShape()),this,SLOT(newShape()));
+    connect(freeHandMaker,SIGNAL(newShapeAvailable()),this,SLOT(newShapeAvailable()));
+    connect(rectangleMaker,SIGNAL(newShapeAvailable()),this,SLOT(newShapeAvailable()));
 
     m_settings.setLineColor(Qt::black);
     m_settings.setLineWidth(0);
@@ -63,7 +63,7 @@ void DrawingPad::mouseReleaseEvent(QMouseEvent *event)
     update();
 }
 
-void DrawingPad::newShape()
+void DrawingPad::newShapeAvailable()
 {
     ShapeMaker *maker = qobject_cast<ShapeMaker *>(sender());
     m_shapeList.push_back(maker->takeShape());

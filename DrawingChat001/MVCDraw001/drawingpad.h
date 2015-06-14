@@ -39,13 +39,12 @@ protected:
     void paintEvent(QPaintEvent *);
 
 private slots:
-    void newShape();
+    void newShapeAvailable();
 
 private:
     Shape::Type m_shapeType;
     DrawingSettings m_settings;
     QMap<Shape::Type,ShapeMaker *> m_shapeMakerMap;
-//    QList<Shape *> m_shapeList;
     ShapeSpace *m_shapeSpace;
 };
 

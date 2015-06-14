@@ -12,16 +12,13 @@ Rectangle::~Rectangle()
 void Rectangle::draw( QPainter &painter ) const
 {
     painter.save();
-    QRect rect(m_point1.x(),
-               m_point1.y(),
-               m_point2.x() - m_point1.x(),
-               m_point2.y() - m_point1.y() );
+    QRect rect(m_point1,m_point2);
 
     if( m_settings.isFillColorEnabled()){
         painter.fillRect(rect,QBrush(m_settings.fillColor()));
     }
     if( m_settings.isOutlineEnabled()){
-        painter.setPen(QPen(m_settings.lineColor(),m_settings.lineWidth()));
+        painter.setPen(QPen(m_settings.lineColor(),m_settings.lineWidth(),Qt::SolidLine,Qt::FlatCap,Qt::MiterJoin));
         painter.drawRect(rect);
     }
     painter.restore();

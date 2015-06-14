@@ -8,4 +8,3 @@ ShapeMaker::ShapeMaker( DrawingSettings *settings )
 ShapeMaker::~ShapeMaker()
 {
 }
-

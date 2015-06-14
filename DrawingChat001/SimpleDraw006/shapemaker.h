@@ -28,7 +28,7 @@ public:
     virtual bool readFrom( QDataStream &in, Shape::Type type ) = 0;
 
 signals:
-    void newShape();
+    void newShapeAvailable();
 
 protected:
     DrawingSettings *m_settings;

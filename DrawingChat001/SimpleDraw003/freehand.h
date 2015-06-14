@@ -14,7 +14,6 @@ public:
     ~FreeHand();
 
     void addPoint(QPoint point);
-    QPoint point(int index) const;
 
     void draw( QPainter &painter ) const;
 

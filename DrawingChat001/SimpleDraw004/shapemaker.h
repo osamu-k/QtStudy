@@ -30,7 +30,7 @@ public:
     int lineWidth(){ return m_lineWidth; }
 
 signals:
-    void newShape();
+    void newShapeAvailable();
 
 protected:
     QColor m_lineColor;

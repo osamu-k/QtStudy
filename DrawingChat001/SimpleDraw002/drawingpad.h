@@ -32,7 +32,7 @@ protected:
 private:
     QColor m_lineColor;
     int m_lineWidth;
-    FreeHand m_freeHand;
+    FreeHand m_currentShape;
     QList<FreeHand> m_shapeList;
 };
 

@@ -38,7 +38,7 @@ protected:
     void paintEvent(QPaintEvent *);
 
 private slots:
-    void newShape();
+    void newShapeAvailable();
 
 private:
     Shape::Type m_shapeType;

@@ -1,6 +1,5 @@
 #include "drawingpad.h"
 
-#include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
 
@@ -19,24 +18,24 @@ DrawingPad::~DrawingPad()
 
 void DrawingPad::mousePressEvent(QMouseEvent *event)
 {
-    m_freeHand.clearPoints();
-    m_freeHand.setLineColor(m_lineColor);
-    m_freeHand.setLineWidth(m_lineWidth);
-    m_freeHand.addPoint(event->pos());
+    m_currentShape.clearPoints();
+    m_currentShape.setLineColor(m_lineColor);
+    m_currentShape.setLineWidth(m_lineWidth);
+    m_currentShape.addPoint(event->pos());
     update();
 }
 
 void DrawingPad::mouseMoveEvent(QMouseEvent *event)
 {
-    m_freeHand.addPoint(event->pos());
+    m_currentShape.addPoint(event->pos());
     update();
 }
 
 void DrawingPad::mouseReleaseEvent(QMouseEvent *event)
 {
-    m_freeHand.addPoint(event->pos());
-    m_shapeList.push_back(m_freeHand);
-    m_freeHand.clearPoints();
+    m_currentShape.addPoint(event->pos());
+    m_shapeList.push_back(m_currentShape);
+    m_currentShape.clearPoints();
     update();
 }
 
@@ -46,5 +45,5 @@ void DrawingPad::paintEvent(QPaintEvent *)
     foreach(FreeHand freeHand, m_shapeList){
         freeHand.draw(painter);
     }
-    m_freeHand.draw(painter);
+    m_currentShape.draw(painter);
 }

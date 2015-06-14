@@ -25,7 +25,7 @@ public:
     virtual Shape *takeShape() = 0;
 
 signals:
-    void newShape();
+    void newShapeAvailable();
 
 protected:
     DrawingSettings *m_settings;

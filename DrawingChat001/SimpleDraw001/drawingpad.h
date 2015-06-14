@@ -23,7 +23,7 @@ protected:
 private:
     QColor m_lineColor;
     int m_lineWidth;
-    QPolygon m_polygon;
+    QPolygon m_currentShape;
     QList<QPolygon> m_shapeList;
 };
 

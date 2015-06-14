@@ -23,5 +23,4 @@ LineWidthDialog::LineWidthDialog(QWidget *parent)
 
 LineWidthDialog::~LineWidthDialog()
 {
-
 }

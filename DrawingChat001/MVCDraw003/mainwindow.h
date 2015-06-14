@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-//#include "drawingpad.h"
 #include "drawingcontroller.h"
 #include "drawingview.h"
 
@@ -31,7 +30,6 @@ private slots:
     void newWindow();
 
 private:
-//    DrawingPad *m_drawingPad;
     DrawingController *m_controller;
     DrawingView *m_view;
 

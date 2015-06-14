@@ -12,11 +12,7 @@ Rectangle::~Rectangle()
 void Rectangle::draw( QPainter &painter ) const
 {
     painter.save();
-    painter.setPen(QPen(m_lineColor,m_lineWidth));
-    painter.drawRect(
-                m_point1.x(),
-                m_point1.y(),
-                m_point2.x() - m_point1.x(),
-                m_point2.y() - m_point1.y() );
+    painter.setPen(QPen(m_lineColor,m_lineWidth,Qt::SolidLine,Qt::FlatCap,Qt::MiterJoin));
+    painter.drawRect( QRect(m_point1,m_point2) );
     painter.restore();
 }

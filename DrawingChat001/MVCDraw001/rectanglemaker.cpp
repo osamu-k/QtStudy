@@ -29,7 +29,7 @@ void RectangleMaker::mouseReleaseEvent(QMouseEvent *event)
     if( m_rectangle == 0 )
         return;
     m_rectangle->setPoint2(event->pos());
-    emit newShape();
+    emit newShapeAvailable();
 }
 
 void RectangleMaker::draw(QPainter &painter) const
@@ -54,6 +54,6 @@ bool RectangleMaker::readFrom( QDataStream &in, Shape::Type type )
         return false;
     m_rectangle = new Rectangle();
     m_rectangle->readFrom(in);
-    emit newShape();
+    emit newShapeAvailable();
     return true;
 }

@@ -29,7 +29,7 @@ void FreeHandMaker::mouseReleaseEvent(QMouseEvent *event)
     if( m_freeHand == 0 )
         return;
     m_freeHand->addPoint(event->pos());
-    emit newShape();
+    emit newShapeAvailable();
 }
 
 void FreeHandMaker::draw(QPainter &painter) const
