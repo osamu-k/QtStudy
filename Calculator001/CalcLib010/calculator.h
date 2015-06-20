@@ -8,6 +8,15 @@ class QLayout;
 class QLineEdit;
 class QPushButton;
 
+enum CalcStateID {
+    CALC_STATE_WAITING_VALUE1,
+    CALC_STATE_READING_VALUE1,
+    CALC_STATE_WAITING_VALUE2,
+    CALC_STATE_READING_VALUE2,
+    CALC_STATE_SHOWING_ANSWER,
+    CALC_STATE_READING_VALUE1_SHOWING_ANSWER
+};
+
 class Calculator : public QWidget
 {
     Q_OBJECT
@@ -38,15 +47,39 @@ private:
     QLayout *setupOperatorButtons();
     QLayout *setupDisplays();
 
+    void setState(CalcStateID state);
+    void disableButtons();
+
+    void appendNumber();
+
+    void calculateOperator();
+    void calculateAndStoreOperator();
+
     bool calculateAdd();
     bool calculateSub();
     bool calculateMul();
     bool calculateDiv();
-    void resetCurrentValue();
+
+    void storeCurrentValue();
+    void storeOperator();
+    void storeLastValueAndOperator();
+
+    void changeSign();
+
+    void clearCurrentValue();
+    void clearAll();
+
     void showCurrentValue();
+    void showLastValue();
 
     QLineEdit *m_display1;
     QLineEdit *m_display2;
+
+    QPushButton *m_buttonAdd;
+    QPushButton *m_buttonSub;
+    QPushButton *m_buttonMul;
+    QPushButton *m_buttonDiv;
+    QPushButton *m_buttonEqual;
 
     typedef bool (Calculator::*operatorFuncPtr)();
     QMap<QObject *,int> m_numberMap;
@@ -57,6 +90,8 @@ private:
     bool m_currentValueInputed;
     long m_lastValue;
     operatorFuncPtr m_operatorFunc;
+
+    CalcStateID m_state;
 };
 
 #endif // CALCULATOR_H

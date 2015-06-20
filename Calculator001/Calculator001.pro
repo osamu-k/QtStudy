@@ -22,4 +22,8 @@ SUBDIRS += \
     CalcApp008 \
     CalcLib009 \
     CalcApp009 \
-    CalcLib009Test
+    CalcLib009Test \
+    CalcLib010 \
+    CalcLib010Test \
+    CalcLib011 \
+    CalcLib011Test

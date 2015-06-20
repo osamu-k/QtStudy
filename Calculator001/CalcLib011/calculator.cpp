@@ -1,4 +1,6 @@
 #include "calculator.h"
+#include "calcstate.h"
+
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -16,11 +18,17 @@ Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
     , m_display1(0)
     , m_display2(0)
+    , m_buttonAdd(0)
+    , m_buttonSub(0)
+    , m_buttonMul(0)
+    , m_buttonDiv(0)
+    , m_buttonEqual(0)
     , m_currentValue(0)
     , m_currentSign(1)
     , m_currentValueInputed(false)
     , m_lastValue(0)
     , m_operatorFunc(0)
+    , m_stateID(CALC_STATE_WAITING_VALUE1)
 {
     QLayout *layoutNumber = setupNumberButtons();
     QLayout *layoutVarious = setupVariousButtons();
@@ -41,6 +49,8 @@ Calculator::Calculator(QWidget *parent)
 
     setLayout(topLayout);
 
+    setupState();
+    setState(CALC_STATE_WAITING_VALUE1);
     showCurrentValue();
 }
 
@@ -95,40 +105,40 @@ QLayout *Calculator::setupVariousButtons()
 
 QLayout *Calculator::setupOperatorButtons()
 {
-    QPushButton *buttonDiv   = new QPushButton(operatorSymbolDiv);
-    QPushButton *buttonMul   = new QPushButton(operatorSymbolMul);
-    QPushButton *buttonSub   = new QPushButton(operatorSymbolSub);
-    QPushButton *buttonAdd   = new QPushButton(operatorSymbolAdd);
-    QPushButton *buttonEqual = new QPushButton("=");
+    m_buttonDiv   = new QPushButton(operatorSymbolDiv);
+    m_buttonMul   = new QPushButton(operatorSymbolMul);
+    m_buttonSub   = new QPushButton(operatorSymbolSub);
+    m_buttonAdd   = new QPushButton(operatorSymbolAdd);
+    m_buttonEqual = new QPushButton("=");
 
-    buttonDiv->setObjectName("buttonDiv");
-    buttonMul->setObjectName("buttonMul");
-    buttonSub->setObjectName("buttonSub");
-    buttonAdd->setObjectName("buttonAdd");
-    buttonEqual->setObjectName("buttonEqual");
+    m_buttonDiv->setObjectName("buttonDiv");
+    m_buttonMul->setObjectName("buttonMul");
+    m_buttonSub->setObjectName("buttonSub");
+    m_buttonAdd->setObjectName("buttonAdd");
+    m_buttonEqual->setObjectName("buttonEqual");
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(buttonDiv);
-    layout->addWidget(buttonMul);
-    layout->addWidget(buttonSub);
-    layout->addWidget(buttonAdd);
-    layout->addWidget(buttonEqual);
+    layout->addWidget(m_buttonDiv);
+    layout->addWidget(m_buttonMul);
+    layout->addWidget(m_buttonSub);
+    layout->addWidget(m_buttonAdd);
+    layout->addWidget(m_buttonEqual);
 
-    connect(buttonDiv,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
-    connect(buttonMul,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
-    connect(buttonSub,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
-    connect(buttonAdd,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
-    connect(buttonEqual,SIGNAL(clicked()),this,SLOT(equalButtonClicked()));
+    connect(m_buttonDiv,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
+    connect(m_buttonMul,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
+    connect(m_buttonSub,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
+    connect(m_buttonAdd,SIGNAL(clicked()),this,SLOT(operatorButtonClicked()));
+    connect(m_buttonEqual,SIGNAL(clicked()),this,SLOT(equalButtonClicked()));
 
-    m_operatorMap[buttonDiv] = &Calculator::calculateDiv;
-    m_operatorMap[buttonMul] = &Calculator::calculateMul;
-    m_operatorMap[buttonSub] = &Calculator::calculateSub;
-    m_operatorMap[buttonAdd] = &Calculator::calculateAdd;
+    m_operatorMap[m_buttonDiv] = &Calculator::calculateDiv;
+    m_operatorMap[m_buttonMul] = &Calculator::calculateMul;
+    m_operatorMap[m_buttonSub] = &Calculator::calculateSub;
+    m_operatorMap[m_buttonAdd] = &Calculator::calculateAdd;
 
-    m_operatorSymbol[buttonDiv] = operatorSymbolDiv;
-    m_operatorSymbol[buttonMul] = operatorSymbolMul;
-    m_operatorSymbol[buttonSub] = operatorSymbolSub;
-    m_operatorSymbol[buttonAdd] = operatorSymbolAdd;
+    m_operatorSymbol[m_buttonDiv] = operatorSymbolDiv;
+    m_operatorSymbol[m_buttonMul] = operatorSymbolMul;
+    m_operatorSymbol[m_buttonSub] = operatorSymbolSub;
+    m_operatorSymbol[m_buttonAdd] = operatorSymbolAdd;
 
     return layout;
 }
@@ -151,7 +161,64 @@ QLayout *Calculator::setupDisplays()
     return layout;
 }
 
+void Calculator::setupState()
+{
+    m_stateMap[CALC_STATE_WAITING_VALUE1] = new CalcStateWaitingNumber1(this);
+    m_stateMap[CALC_STATE_READING_VALUE1] = new CalcStateReadingNumber1(this);
+    m_stateMap[CALC_STATE_WAITING_VALUE2] = new CalcStateWaitingNumber2(this);
+    m_stateMap[CALC_STATE_READING_VALUE2] = new CalcStateReadingNumber2(this);
+    m_stateMap[CALC_STATE_SHOWING_ANSWER] = new CalcStateShowingAnswer(this);
+    m_stateMap[CALC_STATE_READING_VALUE1_SHOWING_ANSWER] = new CalcStateReadingNumber1ShowingAnswer(this);
+}
+
+void Calculator::setState(CalcStateID state)
+{
+    m_stateID = state;
+    disableButtons();
+}
+
+void Calculator::disableButtons()
+{
+    m_buttonAdd->setDisabled(true);
+    m_buttonSub->setDisabled(true);
+    m_buttonMul->setDisabled(true);
+    m_buttonDiv->setDisabled(true);
+    m_buttonEqual->setDisabled(true);
+
+    m_stateMap[m_stateID]->disableButtons();
+}
+
 void Calculator::numberButtonClicked()
+{
+    m_stateMap[m_stateID]->numberButtonClicked();
+}
+
+void Calculator::operatorButtonClicked()
+{
+    m_stateMap[m_stateID]->operatorButtonClicked();
+}
+
+void Calculator::equalButtonClicked()
+{
+    m_stateMap[m_stateID]->equalButtonClicked();
+}
+
+void Calculator::signButtonClicked()
+{
+    m_stateMap[m_stateID]->signButtonClicked();
+}
+
+void Calculator::clearButtonClicked()
+{
+    m_stateMap[m_stateID]->clearButtonClicked();
+}
+
+void Calculator::allClearButtonClicked()
+{
+    m_stateMap[m_stateID]->allClearButtonClicked();
+}
+
+void Calculator::appendNumber()
 {
     m_currentValue *= 10;
     m_currentValue += m_numberMap[sender()];
@@ -159,52 +226,18 @@ void Calculator::numberButtonClicked()
     showCurrentValue();
 }
 
-void Calculator::operatorButtonClicked()
+void Calculator::calculateOperator()
 {
-    if( m_operatorFunc == 0){
-        m_lastValue = m_currentValue*m_currentSign;
-    }
-    else{
-        if( ! (this->*m_operatorFunc)() ){
-            return;
-        }
-    }
-    QString str = QString::number(m_lastValue);
-    str.append(" ");
-    str.append(m_operatorSymbol[sender()]);
-    m_display1->setText(str);
-    m_operatorFunc = m_operatorMap[sender()];
-    resetCurrentValue();
-}
-
-void Calculator::equalButtonClicked()
-{
-    if( m_operatorFunc ){
-        if( (this->*m_operatorFunc)() ){
-            m_display1->setText(QString::number(m_lastValue));
-            m_operatorFunc = 0;
-            resetCurrentValue();
-        }
+    if( (this->*m_operatorFunc)() ){
+        showLastValue();
+        clearCurrentValue();
     }
 }
 
-void Calculator::signButtonClicked()
+void Calculator::calculateAndStoreOperator()
 {
-    m_currentSign *= -1;
-    showCurrentValue();
-}
-
-void Calculator::clearButtonClicked()
-{
-    resetCurrentValue();
-}
-
-void Calculator::allClearButtonClicked()
-{
-    m_lastValue = 0;
-    m_operatorFunc = 0;
-    m_display1->clear();
-    resetCurrentValue();
+    calculateOperator();
+    storeOperator();
 }
 
 bool Calculator::calculateAdd()
@@ -236,7 +269,29 @@ bool Calculator::calculateDiv()
     }
 }
 
-void Calculator::resetCurrentValue()
+void Calculator::storeCurrentValue()
+{
+    m_lastValue = m_currentValue*m_currentSign;
+    showLastValue();
+}
+
+void Calculator::storeOperator()
+{
+    QString str = m_display1->text();
+    str.append(" ");
+    str.append(m_operatorSymbol[sender()]);
+    m_display1->setText(str);
+    m_operatorFunc = m_operatorMap[sender()];
+}
+
+void Calculator::storeLastValueAndOperator()
+{
+    storeCurrentValue();
+    clearCurrentValue();
+    storeOperator();
+}
+
+void Calculator::clearCurrentValue()
 {
     m_currentValue = 0;
     m_currentSign = 1;
@@ -252,4 +307,23 @@ void Calculator::showCurrentValue()
     if( m_currentValueInputed )
         text.append(QString::number(m_currentValue));
     m_display2->setText(text);
+}
+
+void Calculator::showLastValue()
+{
+    m_display1->setText(QString::number(m_lastValue));
+}
+
+void Calculator::changeSign()
+{
+    m_currentSign *= -1;
+    showCurrentValue();
+}
+
+void Calculator::clearAll()
+{
+    m_lastValue = 0;
+    m_operatorFunc = 0;
+    m_display1->clear();
+    clearCurrentValue();
 }
