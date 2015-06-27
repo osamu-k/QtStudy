@@ -43,6 +43,7 @@ public:
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showSign();
     }
     void clearButtonClicked()
     {
@@ -72,7 +73,8 @@ public:
     }
     void operatorButtonClicked()
     {
-        m_calc->storeLastValueAndOperator();
+        m_calc->storeCurrentValue();
+        m_calc->storeOperator();
         m_calc->setState(CALC_STATE_WAITING_VALUE2);
     }
     void equalButtonClicked()
@@ -81,6 +83,7 @@ public:
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showCurrentValue();
     }
     void clearButtonClicked()
     {
@@ -116,6 +119,7 @@ public:
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showSign();
     }
     void clearButtonClicked()
     {
@@ -147,17 +151,21 @@ public:
     }
     void operatorButtonClicked()
     {
-        m_calc->calculateAndStoreOperator();
-        m_calc->setState(CALC_STATE_WAITING_VALUE2);
+        if( m_calc->calculateOperator() ){
+            m_calc->storeOperator();
+            m_calc->setState(CALC_STATE_WAITING_VALUE2);
+        }
     }
     void equalButtonClicked()
     {
-        m_calc->calculateOperator();
-        m_calc->setState(CALC_STATE_SHOWING_ANSWER);
+        if( m_calc->calculateOperator() ){
+            m_calc->setState(CALC_STATE_SHOWING_ANSWER);
+        }
     }
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showCurrentValue();
     }
     void clearButtonClicked()
     {
@@ -199,6 +207,7 @@ public:
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showSign();
     }
     void clearButtonClicked()
     {
@@ -229,7 +238,8 @@ public:
     }
     void operatorButtonClicked()
     {
-        m_calc->storeLastValueAndOperator();
+        m_calc->storeCurrentValue();
+        m_calc->storeOperator();
         m_calc->setState(CALC_STATE_WAITING_VALUE2);
     }
     void equalButtonClicked()
@@ -238,6 +248,7 @@ public:
     void signButtonClicked()
     {
         m_calc->changeSign();
+//        m_calc->showCurrentValue();
     }
     void clearButtonClicked()
     {

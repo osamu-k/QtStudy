@@ -23,7 +23,6 @@ Calculator::Calculator(QWidget *parent)
     , m_buttonEqual(0)
     , m_currentValue(0)
     , m_currentSign(1)
-    , m_currentValueInputed(false)
     , m_lastValue(0)
     , m_operatorFunc(0)
     , m_state(CALC_STATE_WAITING_VALUE1)
@@ -48,7 +47,6 @@ Calculator::Calculator(QWidget *parent)
     setLayout(topLayout);
 
     setState(CALC_STATE_WAITING_VALUE1);
-    showCurrentValue();
 }
 
 Calculator::~Calculator()
@@ -242,21 +240,25 @@ void Calculator::operatorButtonClicked()
     case CALC_STATE_WAITING_VALUE1:
         break;
     case CALC_STATE_READING_VALUE1:
-        storeLastValueAndOperator();
+        storeCurrentValue();
+        storeOperator();
         setState(CALC_STATE_WAITING_VALUE2);
         break;
     case CALC_STATE_WAITING_VALUE2:
         break;
     case CALC_STATE_READING_VALUE2:
-        calculateAndStoreOperator();
-        setState(CALC_STATE_WAITING_VALUE2);
+        if( calculateOperator() ){
+            storeOperator();
+            setState(CALC_STATE_WAITING_VALUE2);
+        }
         break;
     case CALC_STATE_SHOWING_ANSWER:
         storeOperator();
         setState(CALC_STATE_WAITING_VALUE2);
         break;
     case CALC_STATE_READING_VALUE1_SHOWING_ANSWER:
-        storeLastValueAndOperator();
+        storeCurrentValue();
+        storeOperator();
         setState(CALC_STATE_WAITING_VALUE2);
         break;
     default:
@@ -274,8 +276,9 @@ void Calculator::equalButtonClicked()
     case CALC_STATE_WAITING_VALUE2:
         break;
     case CALC_STATE_READING_VALUE2:
-        calculateOperator();
-        setState(CALC_STATE_SHOWING_ANSWER);
+        if( calculateOperator() ){
+            setState(CALC_STATE_SHOWING_ANSWER);
+        }
         break;
     case CALC_STATE_SHOWING_ANSWER:
         break;
@@ -376,22 +379,17 @@ void Calculator::appendNumber()
 {
     m_currentValue *= 10;
     m_currentValue += m_numberMap[sender()];
-    m_currentValueInputed = true;
     showCurrentValue();
 }
 
-void Calculator::calculateOperator()
+bool Calculator::calculateOperator()
 {
     if( (this->*m_operatorFunc)() ){
         showLastValue();
         clearCurrentValue();
+        return true;
     }
-}
-
-void Calculator::calculateAndStoreOperator()
-{
-    calculateOperator();
-    storeOperator();
+    return false;
 }
 
 bool Calculator::calculateAdd()
@@ -427,6 +425,7 @@ void Calculator::storeCurrentValue()
 {
     m_lastValue = m_currentValue*m_currentSign;
     showLastValue();
+    clearCurrentValue();
 }
 
 void Calculator::storeOperator()
@@ -436,42 +435,25 @@ void Calculator::storeOperator()
     str.append(m_operatorSymbol[sender()]);
     m_display1->setText(str);
     m_operatorFunc = m_operatorMap[sender()];
+    clearCurrentValue();
 }
 
-void Calculator::storeLastValueAndOperator()
+void Calculator::changeSign()
 {
-    storeCurrentValue();
-    clearCurrentValue();
-    storeOperator();
+    m_currentSign *= -1;
+    if( m_currentSign > 0 ){
+        m_display2->setText(m_display2->text().mid(1));
+    }
+    else{
+        m_display2->setText(QString("-").append(m_display2->text()));
+    }
 }
 
 void Calculator::clearCurrentValue()
 {
     m_currentValue = 0;
     m_currentSign = 1;
-    m_currentValueInputed = false;
-    showCurrentValue();
-}
-
-void Calculator::showCurrentValue()
-{
-    QString text;
-    if( m_currentSign < 0 )
-        text.append('-');
-    if( m_currentValueInputed )
-        text.append(QString::number(m_currentValue));
-    m_display2->setText(text);
-}
-
-void Calculator::showLastValue()
-{
-    m_display1->setText(QString::number(m_lastValue));
-}
-
-void Calculator::changeSign()
-{
-    m_currentSign *= -1;
-    showCurrentValue();
+    m_display2->clear();
 }
 
 void Calculator::clearAll()
@@ -480,4 +462,18 @@ void Calculator::clearAll()
     m_operatorFunc = 0;
     m_display1->clear();
     clearCurrentValue();
+}
+
+void Calculator::showCurrentValue()
+{
+    QString text;
+    if( m_currentSign < 0 )
+        text.append('-');
+    text.append(QString::number(m_currentValue));
+    m_display2->setText(text);
+}
+
+void Calculator::showLastValue()
+{
+    m_display1->setText(QString::number(m_lastValue));
 }

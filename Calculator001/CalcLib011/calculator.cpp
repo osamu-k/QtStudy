@@ -25,7 +25,6 @@ Calculator::Calculator(QWidget *parent)
     , m_buttonEqual(0)
     , m_currentValue(0)
     , m_currentSign(1)
-    , m_currentValueInputed(false)
     , m_lastValue(0)
     , m_operatorFunc(0)
     , m_stateID(CALC_STATE_WAITING_VALUE1)
@@ -51,7 +50,6 @@ Calculator::Calculator(QWidget *parent)
 
     setupState();
     setState(CALC_STATE_WAITING_VALUE1);
-    showCurrentValue();
 }
 
 Calculator::~Calculator()
@@ -222,22 +220,17 @@ void Calculator::appendNumber()
 {
     m_currentValue *= 10;
     m_currentValue += m_numberMap[sender()];
-    m_currentValueInputed = true;
     showCurrentValue();
 }
 
-void Calculator::calculateOperator()
+bool Calculator::calculateOperator()
 {
     if( (this->*m_operatorFunc)() ){
         showLastValue();
         clearCurrentValue();
+        return true;
     }
-}
-
-void Calculator::calculateAndStoreOperator()
-{
-    calculateOperator();
-    storeOperator();
+    return false;
 }
 
 bool Calculator::calculateAdd()
@@ -273,6 +266,7 @@ void Calculator::storeCurrentValue()
 {
     m_lastValue = m_currentValue*m_currentSign;
     showLastValue();
+    clearCurrentValue();
 }
 
 void Calculator::storeOperator()
@@ -282,21 +276,25 @@ void Calculator::storeOperator()
     str.append(m_operatorSymbol[sender()]);
     m_display1->setText(str);
     m_operatorFunc = m_operatorMap[sender()];
-}
-
-void Calculator::storeLastValueAndOperator()
-{
-    storeCurrentValue();
     clearCurrentValue();
-    storeOperator();
 }
 
 void Calculator::clearCurrentValue()
 {
     m_currentValue = 0;
     m_currentSign = 1;
-    m_currentValueInputed = false;
-    showCurrentValue();
+    m_display2->clear();
+}
+
+void Calculator::changeSign()
+{
+    m_currentSign *= -1;
+    if( m_currentSign > 0 ){
+        m_display2->setText(m_display2->text().mid(1));
+    }
+    else{
+        m_display2->setText(QString("-").append(m_display2->text()));
+    }
 }
 
 void Calculator::showCurrentValue()
@@ -304,20 +302,13 @@ void Calculator::showCurrentValue()
     QString text;
     if( m_currentSign < 0 )
         text.append('-');
-    if( m_currentValueInputed )
-        text.append(QString::number(m_currentValue));
+    text.append(QString::number(m_currentValue));
     m_display2->setText(text);
 }
 
 void Calculator::showLastValue()
 {
     m_display1->setText(QString::number(m_lastValue));
-}
-
-void Calculator::changeSign()
-{
-    m_currentSign *= -1;
-    showCurrentValue();
 }
 
 void Calculator::clearAll()

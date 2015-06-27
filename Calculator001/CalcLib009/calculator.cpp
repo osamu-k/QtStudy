@@ -18,7 +18,6 @@ Calculator::Calculator(QWidget *parent)
     , m_display2(0)
     , m_currentValue(0)
     , m_currentSign(1)
-    , m_currentValueInputed(false)
     , m_lastValue(0)
     , m_operatorFunc(0)
 {
@@ -40,8 +39,6 @@ Calculator::Calculator(QWidget *parent)
     topLayout->addLayout(hboxLayout);
 
     setLayout(topLayout);
-
-    showCurrentValue();
 }
 
 Calculator::~Calculator()
@@ -155,7 +152,6 @@ void Calculator::numberButtonClicked()
 {
     m_currentValue *= 10;
     m_currentValue += m_numberMap[sender()];
-    m_currentValueInputed = true;
     showCurrentValue();
 }
 
@@ -191,7 +187,12 @@ void Calculator::equalButtonClicked()
 void Calculator::signButtonClicked()
 {
     m_currentSign *= -1;
-    showCurrentValue();
+    if( m_currentSign > 0 ){
+        m_display2->setText(m_display2->text().mid(1));
+    }
+    else{
+        m_display2->setText(QString("-").append(m_display2->text()));
+    }
 }
 
 void Calculator::clearButtonClicked()
@@ -240,8 +241,7 @@ void Calculator::resetCurrentValue()
 {
     m_currentValue = 0;
     m_currentSign = 1;
-    m_currentValueInputed = false;
-    showCurrentValue();
+    m_display2->clear();
 }
 
 void Calculator::showCurrentValue()
@@ -249,7 +249,6 @@ void Calculator::showCurrentValue()
     QString text;
     if( m_currentSign < 0 )
         text.append('-');
-    if( m_currentValueInputed )
-        text.append(QString::number(m_currentValue));
+    text.append(QString::number(m_currentValue));
     m_display2->setText(text);
 }

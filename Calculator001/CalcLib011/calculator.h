@@ -62,8 +62,7 @@ private:
 
     void appendNumber();
 
-    void calculateOperator();
-    void calculateAndStoreOperator();
+    bool calculateOperator();
 
     bool calculateAdd();
     bool calculateSub();
@@ -72,7 +71,6 @@ private:
 
     void storeCurrentValue();
     void storeOperator();
-    void storeLastValueAndOperator();
 
     void changeSign();
 
@@ -97,7 +95,6 @@ private:
     QMap<QObject *, QString> m_operatorSymbol;
     long m_currentValue;
     int m_currentSign;
-    bool m_currentValueInputed;
     long m_lastValue;
     operatorFuncPtr m_operatorFunc;
 
