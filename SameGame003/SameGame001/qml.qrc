@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Samegame.qml</file>
+        <file>pics/background.jpg</file>
+        <file>pics/blueStar.png</file>
+        <file>pics/blueStone.png</file>
+        <file>pics/greenStar.png</file>
+        <file>pics/greenStone.png</file>
+        <file>pics/redStar.png</file>
+        <file>pics/redStone.png</file>
+        <file>pics/star.png</file>
+        <file>pics/yellowStone.png</file>
+        <file>Button.qml</file>
+    </qresource>
+</RCC>
