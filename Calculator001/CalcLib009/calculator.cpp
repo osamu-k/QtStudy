@@ -18,6 +18,8 @@ Calculator::Calculator(QWidget *parent)
     , m_display2(0)
     , m_currentValue(0)
     , m_currentSign(1)
+    , m_digitCount(0)
+    , m_showingAnswer(false)
     , m_lastValue(0)
     , m_operatorFunc(0)
 {
@@ -152,13 +154,22 @@ void Calculator::numberButtonClicked()
 {
     m_currentValue *= 10;
     m_currentValue += m_numberMap[sender()];
+    m_digitCount ++;
     showCurrentValue();
 }
 
 void Calculator::operatorButtonClicked()
 {
     if( m_operatorFunc == 0){
-        m_lastValue = m_currentValue*m_currentSign;
+        if( m_digitCount > 0 ){
+            m_lastValue = m_currentValue*m_currentSign;
+        }
+        else if( m_showingAnswer ){
+            // Nothing to do.
+        }
+        else{
+            return;
+        }
     }
     else{
         if( ! (this->*m_operatorFunc)() ){
@@ -170,6 +181,7 @@ void Calculator::operatorButtonClicked()
     str.append(m_operatorSymbol[sender()]);
     m_display1->setText(str);
     m_operatorFunc = m_operatorMap[sender()];
+    m_showingAnswer = false;
     resetCurrentValue();
 }
 
@@ -179,6 +191,7 @@ void Calculator::equalButtonClicked()
         if( (this->*m_operatorFunc)() ){
             m_display1->setText(QString::number(m_lastValue));
             m_operatorFunc = 0;
+            m_showingAnswer = true;
             resetCurrentValue();
         }
     }
@@ -204,6 +217,7 @@ void Calculator::allClearButtonClicked()
 {
     m_lastValue = 0;
     m_operatorFunc = 0;
+    m_showingAnswer =false;
     m_display1->clear();
     resetCurrentValue();
 }
@@ -241,6 +255,7 @@ void Calculator::resetCurrentValue()
 {
     m_currentValue = 0;
     m_currentSign = 1;
+    m_digitCount = 0;
     m_display2->clear();
 }
 

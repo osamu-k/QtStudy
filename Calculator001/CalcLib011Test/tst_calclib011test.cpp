@@ -113,6 +113,18 @@ private Q_SLOTS:
         clickAndAssert(calc,"123+456+789=",QString::number(123+456+789),"");
     }
 
+    void testCalculatorCalculatesOperatorAddAfterEqual()
+    {
+        Calculator calc;
+        calc.show();
+        pause();
+
+        QString disp2str = QString("%1 %2").arg(1+2).arg(Calculator::operatorSymbolAdd);
+        clickAndAssert(calc,"1+2=+", disp2str, "");
+        clickAndAssert(calc,"3", disp2str, "3");
+        clickAndAssert(calc,"=", QString::number(1+2+3), "");
+    }
+
     void testCalculatorAcceptsSign()
     {
         Calculator calc;

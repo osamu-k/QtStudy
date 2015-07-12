@@ -54,7 +54,9 @@ private:
     QMap<QObject *, QString> m_operatorSymbol;
     long m_currentValue;
     int m_currentSign;
+    bool m_digitCount;
     long m_lastValue;
+    bool m_showingAnswer;
     operatorFuncPtr m_operatorFunc;
 };
 
