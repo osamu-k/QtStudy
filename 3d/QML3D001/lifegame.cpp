@@ -106,3 +106,7 @@ void LifeGame::clear()
     emit allChanged();
 }
 
+int LifeGame::activeCount()
+{
+    return m_cellsWithLife.size();
+}

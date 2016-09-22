@@ -25,6 +25,8 @@ public:
     Q_INVOKABLE void next();
     Q_INVOKABLE void clear();
 
+    Q_INVOKABLE int activeCount();
+
 //    QSize imageSize() const;
 //    QImage image( QColor color );
 

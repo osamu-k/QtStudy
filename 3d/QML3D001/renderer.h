@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
+#include <QOpenGLPaintDevice>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QQuickItem>
@@ -124,6 +125,8 @@ private:
     int m_cellCount;
     QImage m_image;
 
+    QOpenGLPaintDevice *m_paintDevice;
+
     void createArrays();
     void createArrayVertex();
     void createArrayColor();
@@ -136,6 +139,7 @@ private:
     void createBufferObject();
     void calculateMvpMatrix();
     void calculateLightingMatrix();
+    void drawOnPaintDevice();
     void draw();
 
     QPoint m_lastMousePosition;

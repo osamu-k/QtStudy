@@ -56,6 +56,7 @@ Renderer::Renderer(QQuickItem *parent)
     , m_bufferTupleSize( 0 )
     , m_updateTexture( false )
     , m_image( 10*31*NUM_FACES, 10*31, QImage::Format_RGBA8888 )
+    , m_paintDevice( nullptr )
     , m_cellSize( 10 )
     , m_cellCount( 31 )
 {
@@ -389,6 +390,23 @@ void Renderer::createBufferObject()
     }
 }
 
+void Renderer::drawOnPaintDevice()
+{
+    QOpenGLPaintDevice device;
+
+    device.setSize(window()->size());
+
+    QPainter painter(&device);
+
+    painter.setPen( Qt::yellow );
+    QFont f = painter.font();
+    f.setPointSize(40);
+    painter.setFont(f);
+
+    int activeCount = m_lifeGame.activeCount();
+    painter.drawText( QPoint( 20, window()->height() - 30), QString::number(activeCount) );
+}
+
 void Renderer::render()
 {
     if( ! m_initialized ){
@@ -416,6 +434,12 @@ void Renderer::render()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     draw();
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+
+    drawOnPaintDevice();
 
     window()->resetOpenGLState();
 }
