@@ -31,7 +31,6 @@ private:
 
     QTcpServer m_tcpServer;
     QList<QTcpSocket*> m_socketList;
-//    MessageBuffer m_buffer;
     QMap<QTcpSocket*,MessageBuffer*> m_bufferMap;
 };
 

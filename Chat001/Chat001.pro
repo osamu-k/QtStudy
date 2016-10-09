@@ -3,4 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     ChatClient \
     ChatServer \
-    ChatLibrary
+    ChatLibrary \
+    ChatServerWS \
+    ChatClientWS

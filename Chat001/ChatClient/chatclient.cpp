@@ -71,12 +71,6 @@ void ChatClient::readyRead()
 //        qDebug() << "message: " << message;
         emit posted(message);
     }
-
-//    QDataStream in(&m_tcpSocket);
-//    QString message;
-//    in >> message;
-//    qDebug() << "message received: " << message;
-//    emit posted(message);
 }
 
 void ChatClient::socketStateChanged(QAbstractSocket::SocketState socketState)
