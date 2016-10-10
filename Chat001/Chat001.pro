@@ -5,4 +5,5 @@ SUBDIRS += \
     ChatServer \
     ChatLibrary \
     ChatServerWS \
-    ChatClientWS
+    ChatClientWS \
+    ChatClientQML

@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-10-09T23:36:29
+# Project created by QtCreator 2016-05-14T09:51:16
 #
 #-------------------------------------------------
 
@@ -8,15 +8,11 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = WebSocketServer
+TARGET = BinCalc001
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        webserverwidget.cpp
+        bincalcwidget.cpp
 
-HEADERS  += webserverwidget.h
-
-CONFIG += mobility
-MOBILITY = 
-
+HEADERS  += bincalcwidget.h

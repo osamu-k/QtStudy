@@ -142,9 +142,9 @@ void ChatClientWidget::stateChanged(ChatClient::State state)
         m_buttonDisconnect->setEnabled(false);
         m_buttonClear->setEnabled(false);
         m_buttonSend->setEnabled(false);
-        if( m_messageBoxConnecting->isVisible() ){
+//        if( m_messageBoxConnecting->isVisible() ){
             QTimer::singleShot(1000,m_messageBoxConnecting,SLOT(hide()));
-        }
+//        }
         break;
 
     case ChatClient::ConnectingState:
@@ -162,9 +162,9 @@ void ChatClientWidget::stateChanged(ChatClient::State state)
         m_buttonDisconnect->setEnabled(true);
         m_buttonClear->setEnabled(true);
         m_buttonSend->setEnabled(true);
-        if( m_messageBoxConnecting->isVisible() ){
+//        if( m_messageBoxConnecting->isVisible() ){
             QTimer::singleShot(1000,m_messageBoxConnecting,SLOT(hide()));
-        }
+//        }
         break;
 
     case ChatClient::DisconnectingState:
