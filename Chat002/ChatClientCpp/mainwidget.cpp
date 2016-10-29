@@ -11,6 +11,7 @@ MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
     , m_textLog(nullptr)
     , m_textInput(nullptr)
+    , m_chatClient(nullptr)
 {
     m_textLog = new QTextEdit;
     m_textLog->setReadOnly(true);
@@ -40,6 +41,9 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect( buttonClear, &QPushButton::clicked, this, &MainWidget::clearClicked );
     connect( buttonSend, &QPushButton::clicked, this, &MainWidget::sendClicked );
+
+    m_chatClient = ChatClient::instance();
+    connect( m_chatClient, &ChatClient::received, this, &MainWidget::messageReceived );
 }
 
 MainWidget::~MainWidget()
@@ -57,7 +61,7 @@ void MainWidget::sendClicked()
 {
     qDebug() << "sendClicked";
     if( ! m_textInput->toPlainText().isEmpty() ){
-        m_textLog->append(m_textInput->toPlainText());
+        m_chatClient->send(m_textInput->toPlainText());
         m_textInput->clear();
     }
     else{
@@ -65,3 +69,7 @@ void MainWidget::sendClicked()
     }
 }
 
+void MainWidget::messageReceived(QString message)
+{
+    m_textLog->append(message);
+}
