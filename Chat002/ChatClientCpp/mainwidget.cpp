@@ -1,6 +1,7 @@
 #include "mainwidget.h"
 
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QPushButton>
 #include <QSplitter>
 #include <QVBoxLayout>
@@ -26,6 +27,15 @@ MainWidget::MainWidget(QWidget *parent)
     QPushButton *buttonSend = new QPushButton(tr("Send"));
     QPushButton *buttonClear = new QPushButton(tr("Clear"));
 
+    QPushButton *buttonConnect = new QPushButton(tr("connect"));
+    QPushButton *buttonDisconnect = new QPushButton(tr("disconnect"));
+    QLabel *labelHost = new QLabel(tr(" host:"));
+    m_editHost = new QLineEdit;
+    QLabel *labelPort = new QLabel(tr(" port:"));
+    m_editPort = new QLineEdit;
+    m_editHost->setText("localhost");
+    m_editPort->setText("12345");
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(splitter);
 
@@ -37,10 +47,25 @@ MainWidget::MainWidget(QWidget *parent)
 
     layout->addLayout(buttonLayout);
 
+    QHBoxLayout *netLayout = new QHBoxLayout;
+    netLayout->addStretch();
+    netLayout->addWidget(buttonConnect);
+    netLayout->addWidget(buttonDisconnect);
+    netLayout->addWidget(labelHost);
+    netLayout->addWidget(m_editHost);
+    netLayout->addWidget(labelPort);
+    netLayout->addWidget(m_editPort);
+    netLayout->addStretch();
+
+    layout->addLayout(netLayout);
+
     resize(400,400);
 
     connect( buttonClear, &QPushButton::clicked, this, &MainWidget::clearClicked );
     connect( buttonSend, &QPushButton::clicked, this, &MainWidget::sendClicked );
+
+    connect( buttonConnect, &QPushButton::clicked, this, &MainWidget::connectClicked );
+    connect( buttonDisconnect, &QPushButton::clicked, this, &MainWidget::disconnectClicked );
 
     m_chatClient = ChatClient::instance();
     connect( m_chatClient, &ChatClient::received, this, &MainWidget::messageReceived );
@@ -49,6 +74,28 @@ MainWidget::MainWidget(QWidget *parent)
 MainWidget::~MainWidget()
 {
 
+}
+
+void MainWidget::connectClicked()
+{
+    qDebug() << "connect clikced";
+    QString host = m_editHost->text();
+    if( host.isEmpty() ){
+        qDebug() << "Host address is not specified.";
+        return;
+    }
+    bool ok = false;
+    quint16 port = m_editPort->text().toInt(&ok);
+    if( ! ok ){
+        qDebug() << "Port number is not an integer.";
+    }
+    m_chatClient->connectToHost(host,port);
+}
+
+void MainWidget::disconnectClicked()
+{
+    qDebug() << "disconnect clicked";
+    m_chatClient->disconnectFromHost();
 }
 
 void MainWidget::clearClicked()

@@ -6,7 +6,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 
-#include "chatclient.h"
+#include "chatserver.h"
 
 class MainWidget : public QWidget
 {
@@ -17,21 +17,17 @@ public:
     ~MainWidget();
 
 private slots:
-    void connectClicked();
-    void disconnectClicked();
-    void clearClicked();
-    void sendClicked();
-
-private slots:
-    void messageReceived(QString message);
+    void startClicked();
+    void stopClicked();
+    void socketConnected(QTcpSocket *tcpSocket);
+    void socketDisconnected(QTcpSocket *tcpSocket);
+    void socketMessageReceived(QTcpSocket *tcpSocket, QString message);
 
 private:
     QTextEdit *m_textLog;
-    QTextEdit *m_textInput;
-    QLineEdit *m_editHost;
     QLineEdit *m_editPort;
 
-    ChatClient *m_chatClient;
+    ChatServer *m_chatServer;
 };
 
 #endif // MAINWIDGET_H

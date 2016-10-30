@@ -5,16 +5,19 @@
 #-------------------------------------------------
 
 QT       -= gui
+QT += network
 
 TARGET = ChatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += \
-    chatclient.cpp
+    chatclient.cpp \
+    chatserver.cpp
 
 HEADERS += \
-    chatclient.h
+    chatclient.h \
+    chatserver.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
