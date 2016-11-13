@@ -1,6 +1,7 @@
 #include "common.h"
 #include "glview.h"
 #include "globjecttriangle.h"
+#include "globjectcube.h"
 
 #include <QMatrix4x4>
 #include <QVector3D>
@@ -48,7 +49,13 @@ void GLView::beforeRenderingNotified()
 
 void GLView::createObjects()
 {
-    GLObject *object = new GLObjectTriangle;
+    GLObject *object = nullptr;
+
+    object = new GLObjectTriangle;
+    object->create();
+    m_objects.push_back(object);
+
+    object = new GLObjectCube;
     object->create();
     m_objects.push_back(object);
 }
@@ -67,7 +74,7 @@ void GLView::setupViewMatrix()
     LOG_METHOD_CALLED;
 
     QMatrix4x4 matrix;
-    matrix.lookAt(QVector3D(3,4,5),QVector3D(0,0,0),QVector3D(0,1,0));
+    matrix.lookAt(QVector3D(3,4,7),QVector3D(0,0,0),QVector3D(0,1,0));
     m_renderer->setViewMatrix(matrix);
 }
 
@@ -76,7 +83,7 @@ void GLView::setupProjectionMatrix()
     LOG_METHOD_CALLED;
 
     QMatrix4x4 matrix;
-    matrix.frustum(-1.0f, 1.0f, -1.0f, 1.0f, 5.0f, 9.0f);
+    matrix.frustum(-1.0f, 1.0f, -1.0f, 1.0f, 5.0f, 10.0f);
     m_renderer->setProjectionMatrix(matrix);
 }
 

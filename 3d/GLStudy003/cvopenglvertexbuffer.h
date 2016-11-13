@@ -12,7 +12,7 @@ public:
     GLuint name() const;
 
     void *data();
-    void update();
+    void store();
 
     void setStride(GLsizei stride);
     GLsizei stride() const;
@@ -30,7 +30,8 @@ public:
 private:
     CVOpenGLFunctions *m_gl = nullptr;
     GLuint m_buffer = 0;
-    std::vector<unsigned char> m_data;
+    GLsizeiptr m_size = 0;
+    void *m_data = nullptr;
     GLsizei m_stride = 0;
     std::map<std::string,CVOpenGLVertexBuffer::AttributeInfo> m_attributeMap;
 };

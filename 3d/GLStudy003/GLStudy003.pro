@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     cvopenglshaderprogram.cpp \
     cvopenglrenderer.cpp \
     globject.cpp \
-    globjecttriangle.cpp
+    globjecttriangle.cpp \
+    globjectcube.cpp
 
 RESOURCES += qml.qrc \
     opengl.qrc
@@ -30,4 +31,5 @@ HEADERS += \
     cvopenglshaderprogram.h \
     cvopenglrenderer.h \
     globject.h \
-    globjecttriangle.h
+    globjecttriangle.h \
+    globjectcube.h

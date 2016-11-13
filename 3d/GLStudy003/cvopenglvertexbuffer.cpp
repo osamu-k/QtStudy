@@ -10,7 +10,7 @@ CVOpenGLVertexBuffer::CVOpenGLVertexBuffer()
 void CVOpenGLVertexBuffer::create(GLsizeiptr size)
 {
     m_gl->glGenBuffers(1,&m_buffer);
-    m_data.resize(size);
+    m_size = size;
 }
 
 GLuint CVOpenGLVertexBuffer::name() const
@@ -20,21 +20,21 @@ GLuint CVOpenGLVertexBuffer::name() const
 
 void *CVOpenGLVertexBuffer::data()
 {
-    return reinterpret_cast<void *>(m_data.data());
+    if( m_data == nullptr ){
+        m_data = new unsigned char[m_size];
+    }
+    return m_data;
 }
 
-void CVOpenGLVertexBuffer::update()
+void CVOpenGLVertexBuffer::store()
 {
     m_gl->glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
     m_gl->glBufferData(GL_ARRAY_BUFFER,
-                       m_data.size(),
-                       reinterpret_cast<void *>(m_data.data()),
+                       m_size,
+                       reinterpret_cast<void *>(m_data),
                        GL_STATIC_DRAW);
-    qDebug() << "size = " << m_data.size();
-    GLfloat *fp = reinterpret_cast<float *>(m_data.data());
-    for( int i = 0; i < m_data.size() / sizeof(GLfloat); i++ ){
-        qDebug() << "data[" << i << "] = " << *(fp++);
-    }
+    delete[] m_data;
+    m_data = nullptr;
 }
 
 void CVOpenGLVertexBuffer::setStride(GLsizei stride)

@@ -29,7 +29,14 @@ void CVOpenGLRenderer::startRendering()
 {
     LOG_METHOD_CALLED;
 
-    m_gl->glClearColor(1.0, 0.5, 0.25, 1.0);
+    m_gl->glEnable(GL_DEPTH_TEST);
+    m_gl->glDepthFunc(GL_LEQUAL);
+
+    m_gl->glEnable(GL_CULL_FACE);
+    m_gl->glFrontFace(GL_CCW);
+    m_gl->glCullFace(GL_BACK);
+
+    m_gl->glClearColor(0.25, 0.5, 0.75, 1.0);
     m_gl->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 

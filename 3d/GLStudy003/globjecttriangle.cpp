@@ -3,17 +3,15 @@
 #include "cvopenglrenderer.h"
 
 static GLfloat arrayPosition[] = {
-     0.5,  0.5,  0.0,
-    -0.5,  0.5,  0.0,
-    -0.5, -0.5,  0.0,
-     0.5, -0.5,  0.0,
+     0.0,  1.0,  0.0,
+    -1.0, -1.0,  0.0,
+     1.0, -1.0,  0.0,
 };
 
 static GLfloat arrayColor[] = {
     1.0, 0.0, 0.0, 1.0,
     0.0, 1.0, 0.0, 1.0,
     0.0, 0.0, 1.0, 1.0,
-    0.0, 1.0, 1.0, 1.0,
 };
 
 GLObjectTriangle::GLObjectTriangle()
@@ -32,12 +30,12 @@ void GLObjectTriangle::create()
     LOG_METHOD_CALLED;
 
     m_vertexBuffer = new CVOpenGLVertexBuffer;
-    m_vertexBuffer->create(sizeof(GLfloat)*4*(3+4));
+    m_vertexBuffer->create(sizeof(GLfloat)*3*(3+4));
 
     GLfloat *datap = reinterpret_cast<GLfloat*>(m_vertexBuffer->data());
     int idxPosition = 0;
     int idxColor = 0;
-    for( int i = 0; i < 4; i++ ){
+    for( int i = 0; i < 3; i++ ){
         *(datap++) = arrayPosition[idxPosition++];
         *(datap++) = arrayPosition[idxPosition++];
         *(datap++) = arrayPosition[idxPosition++];
@@ -48,7 +46,7 @@ void GLObjectTriangle::create()
         *(datap++) = arrayColor[idxColor++];
     }
 
-    m_vertexBuffer->update();
+    m_vertexBuffer->store();
 
     m_vertexBuffer->setStride(sizeof(GLfloat)*(3+4));
     m_vertexBuffer->setAttributeInfo("a_position",3,GL_FLOAT,0);
@@ -61,5 +59,5 @@ void GLObjectTriangle::draw()
 
     CVOpenGLShaderProgram *program = m_renderer->getShaderProgram(CVOpenGLRenderer::CommonShader);
     m_renderer->useProgram(program);
-    program->fillPolygon(m_vertexBuffer,0,4);
+    program->fillPolygon(m_vertexBuffer,0,3);
 }
