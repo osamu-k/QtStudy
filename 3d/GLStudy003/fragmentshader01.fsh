@@ -2,10 +2,15 @@
 precision mediump float;
 #endif
 
-varying vec4 v_position;
-varying vec4 v_color;
+varying vec4 v_frontColor;
+varying vec4 v_backColor;
 
 void main(void)
 {
-    gl_FragColor = v_color;
+    if (gl_FrontFacing){
+        gl_FragColor= v_frontColor;
+    }
+    else{
+        gl_FragColor= v_backColor;
+    }
 }
