@@ -19,11 +19,8 @@ private slots:
 
 private:
     void createObjects();
-
-    void setupModelMatrix();
-    void setupViewMatrix();
+    void setupModelViewMatrix();
     void setupProjectionMatrix();
-
     void draw();
 
     std::vector<GLObject *> m_objects;

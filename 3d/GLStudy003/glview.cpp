@@ -38,8 +38,9 @@ void GLView::beforeRenderingNotified()
 
     m_renderer->startRendering();
 
-    setupModelMatrix();
-    setupViewMatrix();
+    setupModelViewMatrix();
+//    setupModelMatrix();
+//    setupViewMatrix();
     setupProjectionMatrix();
 
     draw();
@@ -60,22 +61,17 @@ void GLView::createObjects()
     m_objects.push_back(object);
 }
 
-void GLView::setupModelMatrix()
+void GLView::setupModelViewMatrix()
 {
     LOG_METHOD_CALLED;
 
     QMatrix4x4 matrix;
-    matrix.scale(1.5);
-    m_renderer->setModelMatrix(matrix);
-}
-
-void GLView::setupViewMatrix()
-{
-    LOG_METHOD_CALLED;
-
-    QMatrix4x4 matrix;
+    // As a View Matrix
     matrix.lookAt(QVector3D(3,4,7),QVector3D(0,0,0),QVector3D(0,1,0));
-    m_renderer->setViewMatrix(matrix);
+    // As a Model Matrix
+    matrix.scale(1.5);
+
+    m_renderer->setModelViewMatrix(matrix);
 }
 
 void GLView::setupProjectionMatrix()

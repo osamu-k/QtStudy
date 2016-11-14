@@ -110,21 +110,13 @@ void CVOpenGLShaderProgram::use()
     m_gl->glUseProgram(m_program);
 }
 
-void CVOpenGLShaderProgram::setModelMatrix(const QMatrix4x4 &value)
+void CVOpenGLShaderProgram::setModelViewMatrix(const QMatrix4x4 &value)
 {
     LOG_METHOD_CALLED;
 
-    GLint location = m_gl->glGetUniformLocation(m_program,"u_modelMatrix");
-    if( location >= 0 ){
-        m_gl->glUniformMatrix4fv(location,1,GL_FALSE,value.constData());
-    }
-}
-
-void CVOpenGLShaderProgram::setViewMatrix(const QMatrix4x4 &value)
-{
-    LOG_METHOD_CALLED;
-
-    GLint location = m_gl->glGetUniformLocation(m_program,"u_viewMatrix");
+    GLint location = m_gl->glGetUniformLocation(m_program,c_uniformModelViewMatrix);
+    qDebug() << "location = " << location;
+    qDebug() << "value = " << value;
     if( location >= 0 ){
         m_gl->glUniformMatrix4fv(location,1,GL_FALSE,value.constData());
     }
@@ -134,7 +126,7 @@ void CVOpenGLShaderProgram::setProjectionMatrix(const QMatrix4x4 &value)
 {
     LOG_METHOD_CALLED;
 
-    GLint location = m_gl->glGetUniformLocation(m_program,"u_projectionMatrix");
+    GLint location = m_gl->glGetUniformLocation(m_program,c_uniformProjectionMatrix);
     if( location >= 0 ){
         m_gl->glUniformMatrix4fv(location,1,GL_FALSE,value.constData());
     }

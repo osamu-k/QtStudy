@@ -22,8 +22,7 @@ public:
 
     CVOpenGLShaderProgram *getShaderProgram(ShaderProgramId id);
 
-    void setModelMatrix(const QMatrix4x4 &value);
-    void setViewMatrix(const QMatrix4x4 &value);
+    void setModelViewMatrix(const QMatrix4x4 &value);
     void setProjectionMatrix(const QMatrix4x4 &value);
 
     void useProgram(CVOpenGLShaderProgram *program);
@@ -35,8 +34,7 @@ private:
     CVOpenGLFunctions *m_gl = nullptr;
     std::map<ShaderProgramId, CVOpenGLShaderProgram *> m_shaderMap;
 
-    QMatrix4x4 m_modelMatrix;
-    QMatrix4x4 m_viewMatrix;
+    QMatrix4x4 m_modelViewMatrix;
     QMatrix4x4 m_projectionMatrix;
 
     static CVOpenGLRenderer *m_instance;

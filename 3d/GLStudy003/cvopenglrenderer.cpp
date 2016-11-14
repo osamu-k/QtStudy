@@ -57,18 +57,11 @@ CVOpenGLShaderProgram *CVOpenGLRenderer::getShaderProgram(ShaderProgramId id)
     return m_shaderMap[id];
 }
 
-void CVOpenGLRenderer::setModelMatrix(const QMatrix4x4 &value)
+void CVOpenGLRenderer::setModelViewMatrix(const QMatrix4x4 &value)
 {
     LOG_METHOD_CALLED;
 
-    m_modelMatrix = value;
-}
-
-void CVOpenGLRenderer::setViewMatrix(const QMatrix4x4 &value)
-{
-    LOG_METHOD_CALLED;
-
-    m_viewMatrix = value;
+    m_modelViewMatrix = value;
 }
 
 void CVOpenGLRenderer::setProjectionMatrix(const QMatrix4x4 &value)
@@ -81,7 +74,6 @@ void CVOpenGLRenderer::setProjectionMatrix(const QMatrix4x4 &value)
 void CVOpenGLRenderer::useProgram(CVOpenGLShaderProgram *program)
 {
     program->use();
-    program->setModelMatrix(m_modelMatrix);
-    program->setViewMatrix(m_viewMatrix);
+    program->setModelViewMatrix(m_modelViewMatrix);
     program->setProjectionMatrix(m_projectionMatrix);
 }

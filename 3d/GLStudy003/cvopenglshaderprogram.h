@@ -12,8 +12,7 @@
 class CVOpenGLShaderProgram
 {
 public:
-    constexpr static const char * const c_uniformModelMatrix = "u_modelMatrix";
-    constexpr static const char * const c_uniformViewMatrix = "u_viewMatrix";
+    constexpr static const char * const c_uniformModelViewMatrix = "u_modelViewMatrix";
     constexpr static const char * const c_uniformProjectionMatrix = "u_projectionMatrix";
 
     constexpr static const char * const c_attribPosition = "a_position";
@@ -24,8 +23,7 @@ public:
 
     void create();
     void use();
-    void setModelMatrix(const QMatrix4x4 &value);
-    void setViewMatrix(const QMatrix4x4 &value);
+    void setModelViewMatrix(const QMatrix4x4 &value);
     void setProjectionMatrix(const QMatrix4x4 &value);
 
     void fillPolygon(CVOpenGLVertexBuffer *vertexBuffer, GLint first, GLint count);
