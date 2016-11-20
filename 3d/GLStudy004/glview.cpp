@@ -25,6 +25,8 @@ void GLView::beforeRenderingNotified()
 {
     LOG_METHOD_CALLED;
 
+    resetOpenGLState();
+
     static bool initialized = false;
     if( ! initialized ){
         initialized = true;
@@ -79,8 +81,17 @@ void GLView::setupProjectionMatrix()
 {
     LOG_METHOD_CALLED;
 
+    QSizeF surfaceSize = m_renderer->surfaceSize();
+
     QMatrix4x4 matrix;
-    matrix.frustum(-1.0f, 1.0f, -1.0f, 1.0f, 5.0f, 10.0f);
+    if( surfaceSize.width() > surfaceSize.height() ){
+        float ratio = surfaceSize.width() / surfaceSize.height();
+        matrix.frustum(-ratio, ratio, -1.0f, 1.0f, 5.0f, 10.0f);
+    }
+    else{
+        float ratio = surfaceSize.height() / surfaceSize.width();
+        matrix.frustum(-1.0f, 1.0f, -ratio, ratio, 5.0f, 10.0f);
+    }
     m_renderer->setProjectionMatrix(matrix);
 }
 
@@ -89,11 +100,29 @@ void GLView::setupLight()
     LOG_METHOD_CALLED;
 
     int lightCount = 1;
+//    GlLight light = {
+//        {0.0, 0.0, 2.0},        //    QVector3D position;  // in world space.
+//        {0.2, 0.2, 0.2, 1.0},   //    QVector4D ambient;
+//        {0.5, 0.5, 0.5, 1.0},   //    QVector4D diffuse;
+//        {0.5, 0.5, 0.5, 1.0},   //    QVector4D specular;
+//        false,                   //     bool spotEnabled;
+//        {0.0, 0.0, -2.0},       //    QVector3D spotDirection;
+//        30.0,                   //    float spotCutOff;
+//        10.0,                    //    float spotExponent;
+//        true,                   //    bool attenuationEnabled;
+//        {1.0, 0.1, 0.03},       //    QVector3D attenuationFactor;
+//    };
+//    GlMaterial material = {
+//        ////    QVector4D ambient;
+//        ////    QVector4D diffuse;
+//        {0.5, 0.5, 0.5, 1.0},   //    QVector4D specular;
+//        10.0                    //    float shininess;
+//    };
     GlLight light = {
         {0.0, 0.0, 2.0},        //    QVector3D position;  // in world space.
-        {0.2, 0.2, 0.2, 0.2},   //    QVector4D ambient;
-        {0.5, 0.5, 0.5, 0.5},   //    QVector4D diffuse;
-        {0.5, 0.5, 0.5, 0.5},   //    QVector4D specular;
+        {0.2, 0.2, 0.2},   //    QVector4D ambient;
+        {0.5, 0.5, 0.5},   //    QVector4D diffuse;
+        {0.5, 0.5, 0.5},   //    QVector4D specular;
         false,                   //     bool spotEnabled;
         {0.0, 0.0, -2.0},       //    QVector3D spotDirection;
         30.0,                   //    float spotCutOff;
@@ -104,7 +133,7 @@ void GLView::setupLight()
     GlMaterial material = {
         ////    QVector4D ambient;
         ////    QVector4D diffuse;
-        {0.5, 0.5, 0.5, 0.5},   //    QVector4D specular;
+        {0.5, 0.5, 0.5},   //    QVector4D specular;
         10.0                    //    float shininess;
     };
 

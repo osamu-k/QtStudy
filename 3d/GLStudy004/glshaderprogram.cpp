@@ -38,7 +38,7 @@ void GLShaderProgram::create()
     if( m_vertexShader == 0){
         return;
     }
-    m_fragmentShader = createShader(GL_FRAGMENT_SHADER,"fragmentlighting.fsh");
+    m_fragmentShader = createShader(GL_FRAGMENT_SHADER,"fragmentlighting2.fsh");
     if( m_fragmentShader == 0 ){
         glDeleteShader(m_vertexShader);
         return;

@@ -6,6 +6,7 @@
 
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
+#include <QSize>
 
 class GLShaderProgram;
 class GLVertexBuffer;
@@ -16,6 +17,8 @@ public:
     static GLRenderer *instance();
 
     void create();
+
+    QSize surfaceSize() const;
 
     GLShaderProgram *getShaderProgram();
 

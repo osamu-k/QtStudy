@@ -3,6 +3,9 @@
 #include "common.h"
 #include "glshaderprogram.h"
 
+#include <QOpenGLContext>
+#include <QSurface>
+
 GLRenderer *GLRenderer::m_instance = nullptr;
 
 GLRenderer *GLRenderer::instance()
@@ -35,6 +38,11 @@ void GLRenderer::create()
 
     m_program = new GLShaderProgram;
     m_program->create();
+}
+
+QSize GLRenderer::surfaceSize() const
+{
+    return QOpenGLContext::currentContext()->surface()->size();
 }
 
 GLShaderProgram *GLRenderer::getShaderProgram()
