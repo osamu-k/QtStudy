@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fragmentlighting.vsh</file>
+        <file>fragmentlighting.fsh</file>
+    </qresource>
+</RCC>
