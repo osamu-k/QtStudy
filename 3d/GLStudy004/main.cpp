@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 #include "common.h"
 #include "glview.h"
@@ -13,7 +14,11 @@ int main(int argc, char *argv[])
 
     GLView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.rootContext()->setContextProperty("mainView", &view);
+
     view.setSource(QUrl("qrc:/main.qml"));
+
+
     view.show();
 
     return app.exec();

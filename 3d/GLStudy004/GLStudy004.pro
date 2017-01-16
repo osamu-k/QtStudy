@@ -30,3 +30,9 @@ HEADERS += \
     glvertexbuffer.h \
     globject.h \
     globjectcube.h
+
+ios {
+   MY_DEVELOPMENT_TEAM.name = DEVELOPMENT_TEAM
+   MY_DEVELOPMENT_TEAM.value = "43737V9LRP"
+   QMAKE_MAC_XCODE_SETTINGS += MY_DEVELOPMENT_TEAM
+}

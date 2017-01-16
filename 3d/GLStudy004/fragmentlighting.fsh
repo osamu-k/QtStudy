@@ -4,6 +4,7 @@ precision mediump float;
 
 const float C_ZERO = 0.0;
 const float C_ONE = 1.0;
+const float C_POINT_TWO = 0.2;
 
 struct Light {
     vec3 position;  // in world space.
@@ -27,6 +28,7 @@ struct Material {
 
 uniform vec3 u_eyePosition; // in world space.
 
+uniform bool u_lightEnabled;
 uniform int u_lightCount;
 uniform Light u_light[8];
 uniform Material u_material;
@@ -63,7 +65,8 @@ vec4 calcSpecular(
     float ndoth = dot( normal, halfPlane );
     if( ndoth > C_ZERO ){
         color = ( pow( ndoth, u_material.shininess)
-                    * u_light[lightId].specular * u_material.specular );
+                  * u_light[lightId].specular
+                  * u_material.specular );
     }
     return color;
 }
@@ -122,13 +125,11 @@ vec4 calcOneLight(
     float spotFactor = calcSpotFactor( lightId, normal, lightDirection );
 
     if( attenuation * spotFactor > C_ZERO ){
-//    if( spotFactor > C_ZERO ){
         color =
             calcAmbient( lightId, materialAmbient )
             + calcDiffuse( lightId, normal, lightDirection, materialDiffuse )
             + calcSpecular( lightId, normal, lightDirection );
         color = color * attenuation * spotFactor;
-//        color = color * spotFactor;
     }
     return color;
 }
@@ -154,11 +155,14 @@ vec4 lighting(
 
 void main(void)
 {
+    vec4 ambientScene = vec4(C_POINT_TWO,C_POINT_TWO,C_POINT_TWO,C_ONE);
+
     vec3 normal = normalize( v_normal );
     if( u_lightCount == 0 ){
         gl_FragColor = v_color;
     }
     else{
-        gl_FragColor = lighting( normal, v_color, v_color );
+        gl_FragColor = v_color * ambientScene + lighting( normal, v_color, v_color );
     }
+    gl_FragColor = v_color;
 }

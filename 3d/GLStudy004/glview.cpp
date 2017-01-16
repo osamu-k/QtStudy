@@ -4,6 +4,8 @@
 #include "glrenderer.h"
 #include "globjectcube.h"
 
+#include <math.h>
+
 GLView::GLView(QWindow *parent)
     : QQuickView(parent)
 {
@@ -137,7 +139,83 @@ void GLView::setupLight()
         10.0                    //    float shininess;
     };
 
+    light.position = lightPosition();
+    qDebug() << "light.position = " << light.position;
     m_renderer->setLightCount(lightCount);
     m_renderer->setLight(0, light);
     m_renderer->setMaterial(material);
+}
+
+void GLView::setLightDistance( float value ){
+    LOG_METHOD_CALLED;
+    qDebug() << "value = " << value;
+
+    if( m_lightDistance != value ){
+        m_lightDistance = value;
+        emit lightDistanceChanged();
+        update();
+    }
+}
+
+float GLView::lightDistance() const
+{
+    LOG_METHOD_CALLED;
+
+    return m_lightDistance;
+}
+
+
+void GLView::setLightAngleX( float value )
+{
+    LOG_METHOD_CALLED;
+    qDebug() << "value = " << value;
+
+    if( m_lightAngleX != value ){
+        m_lightAngleX = value;
+        emit lightAngleXChanged();
+        update();
+    }
+}
+
+float GLView::lightAngleX() const
+{
+    LOG_METHOD_CALLED;
+
+    return m_lightAngleX;
+}
+
+void GLView::setLightAngleY( float value )
+{
+    LOG_METHOD_CALLED;
+    qDebug() << "value = " << value;
+
+    if( m_lightAngleY != value ){
+        m_lightAngleY = value;
+        emit lightAngleYChanged();
+        update();
+    }
+}
+
+float GLView::lightAngleY() const
+{
+    LOG_METHOD_CALLED;
+
+    return m_lightAngleY;
+}
+
+QVector3D GLView::lightPosition()
+{
+    float x = 0;
+    float y = 0;
+    float z = 0;
+
+    y = sin(m_lightAngleX * 2 * M_PI / 360);
+    z = cos(m_lightAngleX * 2 * M_PI / 360);
+
+    x = z * sin(m_lightAngleY * 2 * M_PI / 360);
+    z = z * cos(m_lightAngleY * 2 * M_PI / 360);
+
+    return QVector3D( m_lightDistance * x,
+                      m_lightDistance * y,
+                      m_lightDistance * z );
 }

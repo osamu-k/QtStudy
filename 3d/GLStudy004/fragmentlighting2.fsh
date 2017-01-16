@@ -4,6 +4,7 @@ precision mediump float;
 
 const float C_ZERO = 0.0;
 const float C_ONE = 1.0;
+const float C_POINT_TWO = 0.2;
 
 struct Light {
     vec3 position;  // in world space.
@@ -154,12 +155,14 @@ vec3 lighting(
 
 void main(void)
 {
+    vec3 ambientScene = vec3(C_POINT_TWO,C_POINT_TWO,C_POINT_TWO);
+
     vec3 normal = normalize( v_normal );
     if( u_lightCount == 0 ){
         gl_FragColor = v_color;
     }
     else{
-        vec3 color = lighting( normal, v_color.rgb, v_color.rgb );
+        vec3 color = v_color.rgb * ambientScene + lighting( normal, v_color.rgb, v_color.rgb );
         gl_FragColor = vec4( color.rgb, v_color.a);
     }
 }
